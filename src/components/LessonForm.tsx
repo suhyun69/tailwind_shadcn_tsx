@@ -530,6 +530,26 @@ export function LessonForm() {
               </div>
             </div>
 
+            {/* 문의 */}
+            <div className="space-y-4">
+              <Label className="text-base">Contact</Label>
+              <div className="flex flex-col space-y-1.5">
+                <Select>
+                  <SelectTrigger id="contact_type">
+                    <SelectValue placeholder="타입을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="phone">전화번호</SelectItem>
+                    <SelectItem value="kakaotalk">카카오톡</SelectItem>
+                    <SelectItem value="instagram">인스타그램</SelectItem>
+                    <SelectItem value="cafe">카페</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input id="contact_address" placeholder="연락처를 입력하세요" />
+                <Input id="contact_name" placeholder="이름을 입력하세요" />
+              </div>
+            </div>
+
           </div>
         </form>
       </CardContent>
