@@ -30,7 +30,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, GripVertical, Pencil, X } from "lucide-react"
+
+// 할인 정보 타입 정의
+type DiscountInfo = {
+  type: string;
+  condition: string;
+  amount: string;
+  date?: Date;
+}
 
 export function LessonForm() {
 
@@ -44,6 +52,8 @@ export function LessonForm() {
   const [discountCondition, setDiscountCondition] = React.useState("")
   const [discountAmount, setDiscountAmount] = React.useState("")
   const [discountDate, setDiscountDate] = React.useState<Date>()
+  const [savedDiscounts, setSavedDiscounts] = React.useState<DiscountInfo[]>([])
+  const [editingIndex, setEditingIndex] = React.useState<number | null>(null)
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -96,6 +106,73 @@ export function LessonForm() {
       default:
         return null;
     }
+  };
+
+  // 할인 정보 삭제
+  const handleDeleteDiscount = (index: number) => {
+    setSavedDiscounts(savedDiscounts.filter((_, i) => i !== index));
+  };
+
+  // 할인 정보 수정 시작
+  const handleEditDiscount = (index: number) => {
+    const discount = savedDiscounts[index];
+    setDiscountType(discount.type);
+    if (discount.type === "earlybird" && discount.date) {
+      setDiscountDate(new Date(discount.date));
+    } else {
+      setDiscountCondition(discount.condition);
+    }
+    setDiscountAmount(discount.amount);
+    setEditingIndex(index);
+  };
+
+  // 할인 정보 순서 변경
+  const handleReorderDiscount = (fromIndex: number, toIndex: number) => {
+    const newDiscounts = [...savedDiscounts];
+    const [movedItem] = newDiscounts.splice(fromIndex, 1);
+    newDiscounts.splice(toIndex, 0, movedItem);
+    setSavedDiscounts(newDiscounts);
+  };
+
+  // 할인 정보 추가/수정
+  const handleAddDiscount = () => {
+    console.log({
+      discountType,
+      discountCondition,
+      discountAmount,
+      discountDate
+    });
+    
+    if (!discountType || !discountAmount || 
+        (discountType === "sex" && !discountCondition) || 
+        (discountType === "earlybird" && !discountDate)) {
+      alert("모든 할인 정보를 입력해주세요.");
+      return;
+    }
+
+    const newDiscount: DiscountInfo = {
+      type: discountType,
+      condition: discountType === "earlybird" ? discountDate?.toISOString() || "" : discountCondition,
+      amount: discountAmount,
+      date: discountType === "earlybird" ? discountDate : undefined
+    };
+
+    if (editingIndex !== null) {
+      // 수정 모드
+      const newDiscounts = [...savedDiscounts];
+      newDiscounts[editingIndex] = newDiscount;
+      setSavedDiscounts(newDiscounts);
+      setEditingIndex(null);
+    } else {
+      // 추가 모드
+      setSavedDiscounts([...savedDiscounts, newDiscount]);
+    }
+
+    // 입력 필드 초기화
+    setDiscountType("");
+    setDiscountCondition("");
+    setDiscountAmount("");
+    setDiscountDate(undefined);
   };
 
   return (
@@ -311,6 +388,88 @@ export function LessonForm() {
               </div>
             </div>
 
+            {/* 저장된 할인 정보 표시 */}
+            {savedDiscounts.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-base">적용된 할인</Label>
+                {savedDiscounts.map((discount, index) => (
+                  <div 
+                    key={index} 
+                    className="group relative rounded-lg border p-3 bg-muted hover:bg-muted/80"
+                  >
+                    {/* 드래그 핸들 */}
+                    <button
+                      className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move"
+                      onMouseDown={(e) => {
+                        const container = e.currentTarget.closest('div');
+                        if (!container) return;
+                        
+                        const startY = e.pageY;
+                        const startTop = container.offsetTop;
+                        
+                        const handleMouseMove = (moveEvent: MouseEvent) => {
+                          const currentY = moveEvent.pageY;
+                          const diff = currentY - startY;
+                          const newIndex = Math.floor((startTop + diff) / container.offsetHeight);
+                          
+                          if (newIndex !== index && newIndex >= 0 && newIndex < savedDiscounts.length) {
+                            handleReorderDiscount(index, newIndex);
+                          }
+                        };
+                        
+                        const handleMouseUp = () => {
+                          document.removeEventListener('mousemove', handleMouseMove);
+                          document.removeEventListener('mouseup', handleMouseUp);
+                        };
+                        
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                      }}
+                    >
+                      <GripVertical className="h-4 w-4" />
+                    </button>
+
+                    {/* 할인 정보 내용 */}
+                    <div className="ml-6 text-sm">
+                      <span className="font-medium">
+                        {discount.type === "earlybird" ? "얼리버드" : "성별"} 할인
+                      </span>
+                      <span className="mx-2">|</span>
+                      {discount.type === "earlybird" ? (
+                        <span>
+                          {discount.date && format(new Date(discount.date), "yyyy-MM-dd")} 까지
+                        </span>
+                      ) : (
+                        <span>{discount.condition === "male" ? "남성" : "여성"}</span>
+                      )}
+                      <span className="mx-2">|</span>
+                      <span>{discount.amount}원</span>
+                    </div>
+
+                    {/* 수정/삭제 버튼 */}
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleEditDiscount(index)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive"
+                        onClick={() => handleDeleteDiscount(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* 할인 정보 */}
             <div className="space-y-4">
               <Label className="text-base">할인 정보</Label>
@@ -320,7 +479,7 @@ export function LessonForm() {
                 <Select value={discountType} onValueChange={(value) => {
                   setDiscountType(value);
                   setDiscountCondition("");
-                  setDiscountDate(undefined); // 타입 변경 시 날짜도 초기화
+                  setDiscountDate(undefined);
                 }}>
                   <SelectTrigger id="discount_type">
                     <SelectValue placeholder="할인 타입 선택" />
@@ -330,15 +489,33 @@ export function LessonForm() {
                     <SelectItem value="sex">성별 할인</SelectItem>
                   </SelectContent>
                 </Select>
-
+              
+                {/* 할인 조건 */}
                 {discountType && (
                   <>
                     {renderDiscountConditions()}
                   </>
                 )}
 
-                <Input id="discount_amount" placeholder="할인 금액을 입력하세요" />
+                {/* 할인 금액 */}
+                <Input 
+                  id="discount_amount" 
+                  type="number" 
+                  placeholder="할인 금액을 입력하세요" 
+                  value={discountAmount}
+                  onChange={(e) => setDiscountAmount(e.target.value)}
+                />
               </div>
+
+
+              {/* 적용/수정 버튼 */}
+              <Button
+                type="button"
+                className="w-full"
+                onClick={handleAddDiscount}
+              >
+                {editingIndex !== null ? "할인 수정" : "할인 적용"}
+              </Button>
             </div>
 
           </div>
