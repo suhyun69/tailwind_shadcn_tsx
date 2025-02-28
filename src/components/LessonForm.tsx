@@ -396,38 +396,46 @@ export function LessonForm() {
                   <div 
                     key={index} 
                     className="group relative rounded-lg border p-3 bg-muted hover:bg-muted/80"
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData('text/plain', index.toString());
+                      e.currentTarget.classList.add('dragging', 'opacity-50');
+                    }}
+                    onDragEnd={(e) => {
+                      e.currentTarget.classList.remove('dragging', 'opacity-50');
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      const draggingElement = document.querySelector('.dragging');
+                      const currentElement = e.currentTarget;
+                      if (!draggingElement || draggingElement === currentElement) return;
+                      
+                      const container = currentElement.parentElement;
+                      if (!container) return;
+                      
+                      const children = [...container.children];
+                      const currentIndex = children.indexOf(currentElement);
+                      const draggingIndex = children.indexOf(draggingElement);
+                      
+                      if (currentIndex > draggingIndex) {
+                        currentElement.after(draggingElement);
+                      } else {
+                        currentElement.before(draggingElement);
+                      }
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                      const toIndex = index;
+                      if (fromIndex === toIndex) return;
+                      
+                      handleReorderDiscount(fromIndex, toIndex);
+                    }}
                   >
                     {/* 드래그 핸들 */}
-                    <button
-                      className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move"
-                      onMouseDown={(e) => {
-                        const container = e.currentTarget.closest('div');
-                        if (!container) return;
-                        
-                        const startY = e.pageY;
-                        const startTop = container.offsetTop;
-                        
-                        const handleMouseMove = (moveEvent: MouseEvent) => {
-                          const currentY = moveEvent.pageY;
-                          const diff = currentY - startY;
-                          const newIndex = Math.floor((startTop + diff) / container.offsetHeight);
-                          
-                          if (newIndex !== index && newIndex >= 0 && newIndex < savedDiscounts.length) {
-                            handleReorderDiscount(index, newIndex);
-                          }
-                        };
-                        
-                        const handleMouseUp = () => {
-                          document.removeEventListener('mousemove', handleMouseMove);
-                          document.removeEventListener('mouseup', handleMouseUp);
-                        };
-                        
-                        document.addEventListener('mousemove', handleMouseMove);
-                        document.addEventListener('mouseup', handleMouseUp);
-                      }}
-                    >
+                    <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move">
                       <GripVertical className="h-4 w-4" />
-                    </button>
+                    </div>
 
                     {/* 할인 정보 내용 */}
                     <div className="ml-6 text-sm">
@@ -449,6 +457,7 @@ export function LessonForm() {
                     {/* 수정/삭제 버튼 */}
                     <div className="absolute right-2 top-1/2 -translate-y-1/2 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
@@ -457,6 +466,7 @@ export function LessonForm() {
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
@@ -500,7 +510,6 @@ export function LessonForm() {
                 {/* 할인 금액 */}
                 <Input 
                   id="discount_amount" 
-                  type="number" 
                   placeholder="할인 금액을 입력하세요" 
                   value={discountAmount}
                   onChange={(e) => setDiscountAmount(e.target.value)}
