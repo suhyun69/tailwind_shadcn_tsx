@@ -219,6 +219,26 @@ export function LessonForm() {
               </div>
             </div>
 
+            {/* 지역 */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="region">Region</Label>
+              <Select>
+                <SelectTrigger id="region">
+                  <SelectValue placeholder="지역을 선택하세요" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectItem value="hd">홍대</SelectItem>
+                  <SelectItem value="gn">강남</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* 장소 */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="place">Place</Label>
+              <Input id="place" placeholder="장소를 입력하세요" />
+            </div>
+
           </div>
         </form>
       </CardContent>
