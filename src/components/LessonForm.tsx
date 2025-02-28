@@ -34,9 +34,21 @@ import { CalendarIcon } from "lucide-react"
 
 export function LessonForm() {
 
-  const [startDate, setStartDate] = useState<Date>()
-  const [endDate, setEndDate] = useState<Date>()
+  const [startDate, setStartDate] = React.useState<Date>()
+  const [endDate, setEndDate] = React.useState<Date>()
+  const [startHour, setStartHour] = React.useState("")
+  const [startMinute, setStartMinute] = React.useState("")
+  const [endHour, setEndHour] = React.useState("")
+  const [endMinute, setEndMinute] = React.useState("")
   
+  // 시간 옵션 (0-23)
+  const hourOptions = Array.from({ length: 24 }, (_, i) => 
+    i.toString().padStart(2, '0')
+  )
+
+  // 분 옵션 (0, 30)
+  const minuteOptions = ['00', '10', '20', '30', '40', '50']
+
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -135,6 +147,76 @@ export function LessonForm() {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+
+            {/* 시작 시간 */}
+            <div className="flex flex-col space-y-1.5">
+              <Label>시작 시간</Label>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Select value={startHour} onValueChange={setStartHour}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="시" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {hourOptions.map((hour) => (
+                        <SelectItem key={hour} value={hour}>
+                          {hour}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-1">
+                  <Select value={startMinute} onValueChange={setStartMinute}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="분" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {minuteOptions.map((minute) => (
+                        <SelectItem key={minute} value={minute}>
+                          {minute}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* 종료 시간 */}
+            <div className="flex flex-col space-y-1.5">
+              <Label>종료 시간</Label>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Select value={endHour} onValueChange={setEndHour}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="시" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {hourOptions.map((hour) => (
+                        <SelectItem key={hour} value={hour}>
+                          {hour}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex-1">
+                  <Select value={endMinute} onValueChange={setEndMinute}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="분" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {minuteOptions.map((minute) => (
+                        <SelectItem key={minute} value={minute}>
+                          {minute}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
 
           </div>
