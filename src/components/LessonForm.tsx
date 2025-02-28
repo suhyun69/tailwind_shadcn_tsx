@@ -371,118 +371,104 @@ export function LessonForm() {
               <Input id="price" placeholder="금액을 입력하세요" />
             </div>
 
-            {/* 계좌 */}
-            <div className="space-y-4">
-              <Label className="text-base">Account</Label>
-              <div className="flex flex-col space-y-1.5">
-                <Select>
-                  <SelectTrigger id="bank">
-                    <SelectValue placeholder="은행을 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="sh">신한</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input id="account" placeholder="계좌번호를 입력하세요" />
-                <Input id="account_owner" placeholder="계좌주를 입력하세요" />
-              </div>
-            </div>
-
-            {/* 저장된 할인 정보 표시 */}
-            {savedDiscounts.length > 0 && (
-              <div className="space-y-2">
-                <Label className="text-base">적용된 할인</Label>
-                {savedDiscounts.map((discount, index) => (
-                  <div 
-                    key={index} 
-                    className="group relative rounded-lg border p-3 bg-muted hover:bg-muted/80"
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('text/plain', index.toString());
-                      e.currentTarget.classList.add('dragging', 'opacity-50');
-                    }}
-                    onDragEnd={(e) => {
-                      e.currentTarget.classList.remove('dragging', 'opacity-50');
-                    }}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      const draggingElement = document.querySelector('.dragging');
-                      const currentElement = e.currentTarget;
-                      if (!draggingElement || draggingElement === currentElement) return;
-                      
-                      const container = currentElement.parentElement;
-                      if (!container) return;
-                      
-                      const children = [...container.children];
-                      const currentIndex = children.indexOf(currentElement);
-                      const draggingIndex = children.indexOf(draggingElement);
-                      
-                      if (currentIndex > draggingIndex) {
-                        currentElement.after(draggingElement);
-                      } else {
-                        currentElement.before(draggingElement);
-                      }
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
-                      const toIndex = index;
-                      if (fromIndex === toIndex) return;
-                      
-                      handleReorderDiscount(fromIndex, toIndex);
-                    }}
-                  >
-                    {/* 드래그 핸들 */}
-                    <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move">
-                      <GripVertical className="h-4 w-4" />
-                    </div>
-
-                    {/* 할인 정보 내용 */}
-                    <div className="ml-6 text-sm">
-                      <span className="font-medium">
-                        {discount.type === "earlybird" ? "얼리버드" : "성별"} 할인
-                      </span>
-                      <span className="mx-2">|</span>
-                      {discount.type === "earlybird" ? (
-                        <span>
-                          {discount.date && format(new Date(discount.date), "yyyy-MM-dd")} 까지
-                        </span>
-                      ) : (
-                        <span>{discount.condition === "male" ? "남성" : "여성"}</span>
-                      )}
-                      <span className="mx-2">|</span>
-                      <span>{discount.amount}원</span>
-                    </div>
-
-                    {/* 수정/삭제 버튼 */}
-                    <div className="absolute right-2 top-1/2 -translate-y-1/2 space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleEditDiscount(index)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
-                        onClick={() => handleDeleteDiscount(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
             {/* 할인 정보 */}
             <div className="space-y-4">
-              <Label className="text-base">할인 정보</Label>
+              <Label className="text-base">Discount</Label>
+
+              {/* 저장된 할인 정보 표시 */}
+              {savedDiscounts.length > 0 && (
+                <div className="space-y-2">
+                  {/* <Label className="text-base">적용된 할인</Label> */}
+                  {savedDiscounts.map((discount, index) => (
+                    <div 
+                      key={index} 
+                      className="group relative rounded-lg border p-3 bg-muted hover:bg-muted/80"
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', index.toString());
+                        e.currentTarget.classList.add('dragging', 'opacity-50');
+                      }}
+                      onDragEnd={(e) => {
+                        e.currentTarget.classList.remove('dragging', 'opacity-50');
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        const draggingElement = document.querySelector('.dragging');
+                        const currentElement = e.currentTarget;
+                        if (!draggingElement || draggingElement === currentElement) return;
+                        
+                        const container = currentElement.parentElement;
+                        if (!container) return;
+                        
+                        const children = [...container.children];
+                        const currentIndex = children.indexOf(currentElement);
+                        const draggingIndex = children.indexOf(draggingElement);
+                        
+                        if (currentIndex > draggingIndex) {
+                          currentElement.after(draggingElement);
+                        } else {
+                          currentElement.before(draggingElement);
+                        }
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                        const toIndex = index;
+                        if (fromIndex === toIndex) return;
+                        
+                        handleReorderDiscount(fromIndex, toIndex);
+                      }}
+                    >
+                      {/* 드래그 핸들 */}
+                      <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move">
+                        <GripVertical className="h-4 w-4" />
+                      </div>
+
+                      {/* 할인 정보 내용 */}
+                      <div className="ml-6 flex flex-col space-y-1 text-sm">
+                        <div>
+                          <span>
+                            타입: {discount.type === "earlybird" ? "얼리버드" : "성별"}
+                          </span>
+                        </div>
+                        <div >
+                          {discount.type === "earlybird" ? (
+                            <span>
+                              마감일: {discount.date && format(new Date(discount.date), "yyyy-MM-dd")}
+                            </span>
+                          ) : (
+                            <span>대상: {discount.condition === "male" ? "남성" : "여성"}</span>
+                          )}
+                        </div>
+                        <div>
+                          할인금액: {discount.amount}원
+                        </div>
+                      </div>
+
+                      {/* 수정/삭제 버튼 */}
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditDiscount(index)}
+                        >
+                          수정
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleDeleteDiscount(index)}
+                        >
+                          삭제
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               
               {/* 할인 타입 */}
               <div className="flex flex-col space-y-1.5">
@@ -525,6 +511,23 @@ export function LessonForm() {
               >
                 {editingIndex !== null ? "할인 수정" : "할인 적용"}
               </Button>
+            </div>
+
+            {/* 계좌 */}
+            <div className="space-y-4">
+              <Label className="text-base">Account</Label>
+              <div className="flex flex-col space-y-1.5">
+                <Select>
+                  <SelectTrigger id="bank">
+                    <SelectValue placeholder="은행을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="sh">신한</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input id="account" placeholder="계좌번호를 입력하세요" />
+                <Input id="account_owner" placeholder="계좌주를 입력하세요" />
+              </div>
             </div>
 
           </div>
