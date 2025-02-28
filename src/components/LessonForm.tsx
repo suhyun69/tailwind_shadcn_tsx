@@ -239,6 +239,27 @@ export function LessonForm() {
               <Input id="place" placeholder="장소를 입력하세요" />
             </div>
 
+            {/* 금액 */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="price">Price</Label>
+              <Input id="price" placeholder="금액을 입력하세요" />
+            </div>
+
+            {/* 계좌 */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="region">Account</Label>
+              <Select>
+                <SelectTrigger id="bank">
+                  <SelectValue placeholder="은행을 선택하세요" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectItem value="sh">신한</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input id="account" placeholder="계좌번호를 입력하세요" />
+              <Input id="account_owner" placeholder="계좌주를 입력하세요" />
+            </div>
+
           </div>
         </form>
       </CardContent>
