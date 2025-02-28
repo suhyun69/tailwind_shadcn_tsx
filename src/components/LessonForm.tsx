@@ -40,6 +40,10 @@ export function LessonForm() {
   const [startMinute, setStartMinute] = React.useState("")
   const [endHour, setEndHour] = React.useState("")
   const [endMinute, setEndMinute] = React.useState("")
+  const [discountType, setDiscountType] = React.useState("")
+  const [discountCondition, setDiscountCondition] = React.useState("")
+  const [discountAmount, setDiscountAmount] = React.useState("")
+  const [discountDate, setDiscountDate] = React.useState<Date>()
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -48,6 +52,51 @@ export function LessonForm() {
 
   // 분 옵션 (0, 30)
   const minuteOptions = ['00', '10', '20', '30', '40', '50']
+
+  // 할인 조건 옵션 렌더링
+  const renderDiscountConditions = () => {
+    switch (discountType) {
+      case "earlybird":
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !discountDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {discountDate ? format(discountDate, "yyyy-MM-dd") : "마감 날짜를 선택하세요"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={discountDate}
+                onSelect={setDiscountDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        );
+      case "sex":
+        return (
+          <Select value={discountCondition} onValueChange={setDiscountCondition}>
+            <SelectTrigger id="discount_condition">
+              <SelectValue placeholder="성별 선택" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+            </SelectContent>
+          </Select>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <Card className="w-[350px]">
@@ -246,18 +295,50 @@ export function LessonForm() {
             </div>
 
             {/* 계좌 */}
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="region">Account</Label>
-              <Select>
-                <SelectTrigger id="bank">
-                  <SelectValue placeholder="은행을 선택하세요" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="sh">신한</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input id="account" placeholder="계좌번호를 입력하세요" />
-              <Input id="account_owner" placeholder="계좌주를 입력하세요" />
+            <div className="space-y-4">
+              <Label className="text-base">Account</Label>
+              <div className="flex flex-col space-y-1.5">
+                <Select>
+                  <SelectTrigger id="bank">
+                    <SelectValue placeholder="은행을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="sh">신한</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input id="account" placeholder="계좌번호를 입력하세요" />
+                <Input id="account_owner" placeholder="계좌주를 입력하세요" />
+              </div>
+            </div>
+
+            {/* 할인 정보 */}
+            <div className="space-y-4">
+              <Label className="text-base">할인 정보</Label>
+              
+              {/* 할인 타입 */}
+              <div className="flex flex-col space-y-1.5">
+                <Select value={discountType} onValueChange={(value) => {
+                  setDiscountType(value);
+                  setDiscountCondition("");
+                  setDiscountDate(undefined); // 타입 변경 시 날짜도 초기화
+                }}>
+                  <SelectTrigger id="discount_type">
+                    <SelectValue placeholder="할인 타입 선택" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="earlybird">얼리버드</SelectItem>
+                    <SelectItem value="sex">성별 할인</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {discountType && (
+                  <>
+                    {renderDiscountConditions()}
+                  </>
+                )}
+
+                <Input id="discount_amount" placeholder="할인 금액을 입력하세요" />
+              </div>
             </div>
 
           </div>
