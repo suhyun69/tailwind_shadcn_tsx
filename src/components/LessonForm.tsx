@@ -535,11 +535,10 @@ export function LessonForm() {
               {/* 저장된 할인 정보 표시 */}
               {savedDiscounts.length > 0 && (
                 <div className="space-y-2">
-                  {/* <Label className="text-base">적용된 할인</Label> */}
                   {savedDiscounts.map((discount, index) => (
                     <div 
                       key={index} 
-                      className="group relative rounded-lg border p-3 bg-muted hover:bg-muted/80"
+                      className="group relative rounded-lg border p-3 bg-muted"
                       draggable
                       onDragStart={(e) => {
                         e.dataTransfer.setData('text/plain', index.toString());
@@ -588,7 +587,7 @@ export function LessonForm() {
                             타입: {discount.type === "earlybird" ? "얼리버드" : "성별"}
                           </span>
                         </div>
-                        <div >
+                        <div>
                           {discount.type === "earlybird" ? (
                             <span>
                               마감일: {discount.date && format(new Date(discount.date), "yyyy-MM-dd")}
@@ -627,8 +626,8 @@ export function LessonForm() {
                 </div>
               )}
               
-              {/* 할인 타입 */}
-              <div className="flex flex-col space-y-1.5">
+              {/* 입력 영역 */}
+              <div className="space-y-2">
                 <Select value={discountType} onValueChange={(value) => {
                   setDiscountType(value);
                   setDiscountCondition("");
@@ -642,32 +641,33 @@ export function LessonForm() {
                     <SelectItem value="sex">성별 할인</SelectItem>
                   </SelectContent>
                 </Select>
-              
+
                 {/* 할인 조건 */}
-                {discountType && (
-                  <>
-                    {renderDiscountConditions()}
-                  </>
-                )}
+                {discountType && renderDiscountConditions()}
 
-                {/* 할인 금액 */}
-                <Input 
-                  id="discount_amount" 
-                  placeholder="할인 금액을 입력하세요" 
-                  value={discountAmount}
-                  onChange={(e) => setDiscountAmount(e.target.value)}
-                />
+                {/* 할인 금액 입력 및 버튼 */}
+                <div className="flex gap-2">
+                  <Input 
+                    id="discount_amount" 
+                    placeholder="할인 금액을 입력하세요" 
+                    value={discountAmount}
+                    onChange={(e) => setDiscountAmount(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAddDiscount();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddDiscount}
+                    className="shrink-0"
+                  >
+                    {editingIndex !== null ? "수정" : "입력"}
+                  </Button>
+                </div>
               </div>
-
-
-              {/* 적용/수정 버튼 */}
-              <Button
-                type="button"
-                className="w-full"
-                onClick={handleAddDiscount}
-              >
-                {editingIndex !== null ? "할인 수정" : "할인 적용"}
-              </Button>
             </div>
 
             {/* 계좌 */}
@@ -699,38 +699,31 @@ export function LessonForm() {
                       key={index} 
                       className="relative rounded-lg border p-3 bg-muted"
                     >
-                      <div className="flex flex-col space-y-1 text-sm">
-                        <div>
-                          <span>타입: {contact.type}</span>
-                        </div>
-                        <div>
-                          <span>연락처: {contact.address}</span>
-                        </div>
-                        {contact.name && (
-                          <div>
-                            <span>이름: {contact.name}</span>
-                          </div>
-                        )}
+                      <div className="pr-16 text-sm break-words">
+                        <div>타입: {contact.type}</div>
+                        <div>연락처: {contact.address}</div>
+                        {contact.name && <div>이름: {contact.name}</div>}
                       </div>
 
                       {/* 수정/삭제 버튼 */}
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
+                          className="h-8 w-8 p-0"
                           onClick={() => handleEditContact(index)}
                         >
-                          수정
+                          <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          className="text-destructive hover:text-destructive"
+                          className="h-8 w-8 p-0 text-destructive"
                           onClick={() => handleDeleteContact(index)}
                         >
-                          삭제
+                          <X className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -738,7 +731,8 @@ export function LessonForm() {
                 </div>
               )}
 
-              <div className="flex flex-col space-y-1.5">
+              {/* 입력 영역 */}
+              <div className="space-y-2">
                 <Select value={contactType} onValueChange={setContactType}>
                   <SelectTrigger id="contact_type">
                     <SelectValue placeholder="타입을 선택하세요" />
@@ -750,30 +744,69 @@ export function LessonForm() {
                     <SelectItem value="cafe">카페</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input 
-                  id="contact_address" 
-                  placeholder="연락처를 입력하세요" 
-                  value={contactAddress}
-                  onChange={(e) => setContactAddress(e.target.value)}
-                />
-                {(contactType === "phone" || contactType === "kakaotalk") && (
-                  <Input 
-                    id="contact_name" 
-                    placeholder="이름을 입력하세요" 
-                    value={contactName}
-                    onChange={(e) => setContactName(e.target.value)}
-                  />
+
+                {(contactType === "phone" || contactType === "kakaotalk") ? (
+                  // phone 또는 kakaotalk인 경우
+                  <div className="flex-1 flex flex-col gap-2">
+                    <Input 
+                      id="contact_address" 
+                      placeholder="연락처를 입력하세요" 
+                      value={contactAddress}
+                      onChange={(e) => setContactAddress(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleAddContact();
+                        }
+                      }}
+                    />
+                    <div className="flex gap-2">
+                      <Input 
+                        id="contact_name" 
+                        placeholder="이름을 입력하세요" 
+                        value={contactName}
+                        onChange={(e) => setContactName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleAddContact();
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleAddContact}
+                        className="shrink-0"
+                      >
+                        {editingContactIndex !== null ? "수정" : "입력"}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  // 그 외의 경우
+                  <div className="flex gap-2">
+                    <Input 
+                      id="contact_address" 
+                      placeholder="연락처를 입력하세요" 
+                      value={contactAddress}
+                      onChange={(e) => setContactAddress(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleAddContact();
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleAddContact}
+                      className="shrink-0"
+                    >
+                      {editingContactIndex !== null ? "수정" : "입력"}
+                    </Button>
+                  </div>
                 )}
               </div>
-
-              {/* 적용/수정 버튼 */}
-              <Button
-                type="button"
-                className="w-full"
-                onClick={handleAddContact}
-              >
-                {editingContactIndex !== null ? "연락처 수정" : "연락처 추가"}
-              </Button>
             </div>
 
             {/* 공지사항 */}
@@ -788,28 +821,29 @@ export function LessonForm() {
                       key={index} 
                       className="relative rounded-lg border p-3 bg-muted"
                     >
-                      <div className="pr-20 text-sm">
+                      <div className="pr-16 text-sm break-words">
                         {notice.content}
                       </div>
 
                       {/* 수정/삭제 버튼 */}
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
+                          className="h-8 w-8 p-0"
                           onClick={() => handleEditNotice(index)}
                         >
-                          수정
+                          <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          className="text-destructive hover:text-destructive"
+                          className="h-8 w-8 p-0 text-destructive"
                           onClick={() => handleDeleteNotice(index)}
                         >
-                          삭제
+                          <X className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -817,23 +851,28 @@ export function LessonForm() {
                 </div>
               )}
 
-              <div className="flex flex-col space-y-1.5">
+              {/* 입력 영역 */}
+              <div className="flex gap-2">
                 <Input 
                   id="notice_content" 
                   placeholder="공지사항을 입력하세요" 
                   value={noticeContent}
                   onChange={(e) => setNoticeContent(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAddNotice();
+                    }
+                  }}
                 />
+                <Button
+                  type="button"
+                  onClick={handleAddNotice}
+                  className="shrink-0"
+                >
+                  {editingNoticeIndex !== null ? "수정" : "입력"}
+                </Button>
               </div>
-
-              {/* 적용/수정 버튼 */}
-              <Button
-                type="button"
-                className="w-full"
-                onClick={handleAddNotice}
-              >
-                {editingNoticeIndex !== null ? "공지사항 수정" : "공지사항 추가"}
-              </Button>
             </div>
 
             {/* 조건 */}
@@ -848,28 +887,29 @@ export function LessonForm() {
                       key={index} 
                       className="relative rounded-lg border p-3 bg-muted"
                     >
-                      <div className="pr-20 text-sm">
+                      <div className="pr-16 text-sm break-words">
                         {condition.content}
                       </div>
 
                       {/* 수정/삭제 버튼 */}
-                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
+                          className="h-8 w-8 p-0"
                           onClick={() => handleEditCondition(index)}
                         >
-                          수정
+                          <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          className="text-destructive hover:text-destructive"
+                          className="h-8 w-8 p-0 text-destructive"
                           onClick={() => handleDeleteCondition(index)}
                         >
-                          삭제
+                          <X className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -877,23 +917,28 @@ export function LessonForm() {
                 </div>
               )}
 
-              <div className="flex flex-col space-y-1.5">
+              {/* 입력 영역 */}
+              <div className="flex gap-2">
                 <Input 
                   id="condition_content" 
                   placeholder="조건을 입력하세요" 
                   value={conditionContent}
                   onChange={(e) => setConditionContent(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAddCondition();
+                    }
+                  }}
                 />
+                <Button
+                  type="button"
+                  onClick={handleAddCondition}
+                  className="shrink-0"
+                >
+                  {editingConditionIndex !== null ? "수정" : "입력"}
+                </Button>
               </div>
-
-              {/* 적용/수정 버튼 */}
-              <Button
-                type="button"
-                className="w-full"
-                onClick={handleAddCondition}
-              >
-                {editingConditionIndex !== null ? "조건 수정" : "조건 추가"}
-              </Button>
             </div>
 
           </div>
