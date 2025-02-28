@@ -82,6 +82,8 @@ export function LessonForm() {
   const [conditionContent, setConditionContent] = React.useState("")
   const [savedConditions, setSavedConditions] = React.useState<ConditionInfo[]>([])
   const [editingConditionIndex, setEditingConditionIndex] = React.useState<number | null>(null)
+  const [isStartDateOpen, setIsStartDateOpen] = React.useState(false)
+  const [isEndDateOpen, setIsEndDateOpen] = React.useState(false)
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -381,7 +383,7 @@ export function LessonForm() {
             {/* 시작일 */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="start_date">시작일</Label>
-              <Popover>
+              <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -398,7 +400,10 @@ export function LessonForm() {
                   <Calendar
                     mode="single"
                     selected={startDate}
-                    onSelect={setStartDate}
+                    onSelect={(date) => {
+                      setStartDate(date);
+                      setIsStartDateOpen(false);
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
@@ -408,7 +413,7 @@ export function LessonForm() {
             {/* 종료일 */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="end_date">종료일</Label>
-              <Popover>
+              <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant={"outline"}
@@ -425,7 +430,10 @@ export function LessonForm() {
                   <Calendar
                     mode="single"
                     selected={endDate}
-                    onSelect={setEndDate}
+                    onSelect={(date) => {
+                      setEndDate(date);
+                      setIsEndDateOpen(false);
+                    }}
                     initialFocus
                   />
                 </PopoverContent>
