@@ -327,6 +327,21 @@ export function LessonForm() {
         <form>
           <div className="grid w-full items-center gap-4">
 
+            {/* 장르 */}
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="genre">Genre</Label>
+              <Select>
+                <SelectTrigger id="genre">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectItem value="salsa">살사</SelectItem>
+                  <SelectItem value="bachata">바차타</SelectItem>
+                  <SelectItem value="kizomba">키좀바</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* 타이틀 */}
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="title">Title</Label>
