@@ -528,6 +528,7 @@ export function LessonForm() {
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="place">Place</Label>
               <Input id="place" placeholder="장소를 입력하세요" />
+              <Input id="place_url" placeholder="장소 링크를 입력하세요" />
             </div>
 
             {/* 금액 */}
