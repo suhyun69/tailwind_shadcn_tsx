@@ -40,6 +40,13 @@ type DiscountInfo = {
   date?: Date;
 }
 
+// 연락처 정보 타입 정의
+type ContactInfo = {
+  type: string;
+  address: string;
+  name: string;
+}
+
 export function LessonForm() {
 
   const [startDate, setStartDate] = React.useState<Date>()
@@ -54,6 +61,11 @@ export function LessonForm() {
   const [discountDate, setDiscountDate] = React.useState<Date>()
   const [savedDiscounts, setSavedDiscounts] = React.useState<DiscountInfo[]>([])
   const [editingIndex, setEditingIndex] = React.useState<number | null>(null)
+  const [contactType, setContactType] = React.useState("")
+  const [contactAddress, setContactAddress] = React.useState("")
+  const [contactName, setContactName] = React.useState("")
+  const [savedContacts, setSavedContacts] = React.useState<ContactInfo[]>([])
+  const [editingContactIndex, setEditingContactIndex] = React.useState<number | null>(null)
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -173,6 +185,49 @@ export function LessonForm() {
     setDiscountCondition("");
     setDiscountAmount("");
     setDiscountDate(undefined);
+  };
+
+  // 연락처 추가
+  const handleAddContact = () => {
+    if (!contactType || !contactAddress || 
+        ((contactType === "phone" || contactType === "kakaotalk") && !contactName)) {
+      alert("모든 연락처 정보를 입력해주세요.");
+      return;
+    }
+
+    const newContact: ContactInfo = {
+      type: contactType,
+      address: contactAddress,
+      name: contactName || "" // name이 필요없는 경우 빈 문자열로 설정
+    };
+
+    if (editingContactIndex !== null) {
+      const newContacts = [...savedContacts];
+      newContacts[editingContactIndex] = newContact;
+      setSavedContacts(newContacts);
+      setEditingContactIndex(null);
+    } else {
+      setSavedContacts([...savedContacts, newContact]);
+    }
+
+    // 입력 필드 초기화
+    setContactType("");
+    setContactAddress("");
+    setContactName("");
+  };
+
+  // 연락처 수정
+  const handleEditContact = (index: number) => {
+    const contact = savedContacts[index];
+    setContactType(contact.type);
+    setContactAddress(contact.address);
+    setContactName(contact.name);
+    setEditingContactIndex(index);
+  };
+
+  // 연락처 삭제
+  const handleDeleteContact = (index: number) => {
+    setSavedContacts(savedContacts.filter((_, i) => i !== index));
   };
 
   return (
@@ -533,8 +588,56 @@ export function LessonForm() {
             {/* 문의 */}
             <div className="space-y-4">
               <Label className="text-base">Contact</Label>
+
+              {/* 저장된 연락처 정보 표시 */}
+              {savedContacts.length > 0 && (
+                <div className="space-y-2">
+                  {savedContacts.map((contact, index) => (
+                    <div 
+                      key={index} 
+                      className="relative rounded-lg border p-3 bg-muted"
+                    >
+                      <div className="flex flex-col space-y-1 text-sm">
+                        <div>
+                          <span>타입: {contact.type}</span>
+                        </div>
+                        <div>
+                          <span>연락처: {contact.address}</span>
+                        </div>
+                        {contact.name && (
+                          <div>
+                            <span>이름: {contact.name}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 수정/삭제 버튼 */}
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditContact(index)}
+                        >
+                          수정
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleDeleteContact(index)}
+                        >
+                          삭제
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex flex-col space-y-1.5">
-                <Select>
+                <Select value={contactType} onValueChange={setContactType}>
                   <SelectTrigger id="contact_type">
                     <SelectValue placeholder="타입을 선택하세요" />
                   </SelectTrigger>
@@ -545,9 +648,30 @@ export function LessonForm() {
                     <SelectItem value="cafe">카페</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input id="contact_address" placeholder="연락처를 입력하세요" />
-                <Input id="contact_name" placeholder="이름을 입력하세요" />
+                <Input 
+                  id="contact_address" 
+                  placeholder="연락처를 입력하세요" 
+                  value={contactAddress}
+                  onChange={(e) => setContactAddress(e.target.value)}
+                />
+                {(contactType === "phone" || contactType === "kakaotalk") && (
+                  <Input 
+                    id="contact_name" 
+                    placeholder="이름을 입력하세요" 
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                  />
+                )}
               </div>
+
+              {/* 적용/수정 버튼 */}
+              <Button
+                type="button"
+                className="w-full"
+                onClick={handleAddContact}
+              >
+                {editingContactIndex !== null ? "연락처 수정" : "연락처 추가"}
+              </Button>
             </div>
 
           </div>
