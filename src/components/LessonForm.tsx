@@ -49,6 +49,7 @@ type ContactInfo = {
 
 // Notice 타입 정의 추가
 type NoticeInfo = {
+  type: string;
   content: string;
 }
 
@@ -76,6 +77,7 @@ export function LessonForm() {
   const [contactName, setContactName] = React.useState("")
   const [savedContacts, setSavedContacts] = React.useState<ContactInfo[]>([])
   const [editingContactIndex, setEditingContactIndex] = React.useState<number | null>(null)
+  const [noticeType, setNoticeType] = React.useState("")
   const [noticeContent, setNoticeContent] = React.useState("")
   const [savedNotices, setSavedNotices] = React.useState<NoticeInfo[]>([])
   const [editingNoticeIndex, setEditingNoticeIndex] = React.useState<number | null>(null)
@@ -248,12 +250,13 @@ export function LessonForm() {
 
   // 공지사항 추가
   const handleAddNotice = () => {
-    if (!noticeContent) {
-      alert("공지사항 내용을 입력해주세요.");
+    if (!noticeType || !noticeContent) {
+      alert("공지사항 타입과 내용을 모두 입력해주세요.");
       return;
     }
 
     const newNotice: NoticeInfo = {
+      type: noticeType,
       content: noticeContent
     };
 
@@ -267,12 +270,14 @@ export function LessonForm() {
     }
 
     // 입력 필드 초기화
+    setNoticeType("");
     setNoticeContent("");
   };
 
   // 공지사항 수정
   const handleEditNotice = (index: number) => {
     const notice = savedNotices[index];
+    setNoticeType(notice.type);
     setNoticeContent(notice.content);
     setEditingNoticeIndex(index);
   };
@@ -788,8 +793,9 @@ export function LessonForm() {
                       key={index} 
                       className="relative rounded-lg border p-3 bg-muted"
                     >
-                      <div className="pr-20 text-sm">
-                        {notice.content}
+                      <div className="pr-20 text-sm space-y-1">
+                        <div>타입: {notice.type}</div>
+                        <div>{notice.content}</div>
                       </div>
 
                       {/* 수정/삭제 버튼 */}
@@ -818,6 +824,16 @@ export function LessonForm() {
               )}
 
               <div className="flex flex-col space-y-1.5">
+                <Select value={noticeType} onValueChange={setNoticeType}>
+                  <SelectTrigger id="notice_type">
+                    <SelectValue placeholder="타입을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="date">날짜</SelectItem>
+                    <SelectItem value="time">시간</SelectItem>
+                    <SelectItem value="price">가격</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Input 
                   id="notice_content" 
                   placeholder="공지사항을 입력하세요" 
