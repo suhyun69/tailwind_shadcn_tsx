@@ -47,6 +47,16 @@ type ContactInfo = {
   name: string;
 }
 
+// Notice 타입 정의 추가
+type NoticeInfo = {
+  content: string;
+}
+
+// Condition 타입 정의 추가
+type ConditionInfo = {
+  content: string;
+}
+
 export function LessonForm() {
 
   const [startDate, setStartDate] = React.useState<Date>()
@@ -66,6 +76,12 @@ export function LessonForm() {
   const [contactName, setContactName] = React.useState("")
   const [savedContacts, setSavedContacts] = React.useState<ContactInfo[]>([])
   const [editingContactIndex, setEditingContactIndex] = React.useState<number | null>(null)
+  const [noticeContent, setNoticeContent] = React.useState("")
+  const [savedNotices, setSavedNotices] = React.useState<NoticeInfo[]>([])
+  const [editingNoticeIndex, setEditingNoticeIndex] = React.useState<number | null>(null)
+  const [conditionContent, setConditionContent] = React.useState("")
+  const [savedConditions, setSavedConditions] = React.useState<ConditionInfo[]>([])
+  const [editingConditionIndex, setEditingConditionIndex] = React.useState<number | null>(null)
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -228,6 +244,77 @@ export function LessonForm() {
   // 연락처 삭제
   const handleDeleteContact = (index: number) => {
     setSavedContacts(savedContacts.filter((_, i) => i !== index));
+  };
+
+  // 공지사항 추가
+  const handleAddNotice = () => {
+    if (!noticeContent) {
+      alert("공지사항 내용을 입력해주세요.");
+      return;
+    }
+
+    const newNotice: NoticeInfo = {
+      content: noticeContent
+    };
+
+    if (editingNoticeIndex !== null) {
+      const newNotices = [...savedNotices];
+      newNotices[editingNoticeIndex] = newNotice;
+      setSavedNotices(newNotices);
+      setEditingNoticeIndex(null);
+    } else {
+      setSavedNotices([...savedNotices, newNotice]);
+    }
+
+    // 입력 필드 초기화
+    setNoticeContent("");
+  };
+
+  // 공지사항 수정
+  const handleEditNotice = (index: number) => {
+    const notice = savedNotices[index];
+    setNoticeContent(notice.content);
+    setEditingNoticeIndex(index);
+  };
+
+  // 공지사항 삭제
+  const handleDeleteNotice = (index: number) => {
+    setSavedNotices(savedNotices.filter((_, i) => i !== index));
+  };
+
+  // 조건 추가
+  const handleAddCondition = () => {
+    if (!conditionContent) {
+      alert("조건 내용을 입력해주세요.");
+      return;
+    }
+
+    const newCondition: ConditionInfo = {
+      content: conditionContent
+    };
+
+    if (editingConditionIndex !== null) {
+      const newConditions = [...savedConditions];
+      newConditions[editingConditionIndex] = newCondition;
+      setSavedConditions(newConditions);
+      setEditingConditionIndex(null);
+    } else {
+      setSavedConditions([...savedConditions, newCondition]);
+    }
+
+    setConditionContent("");
+  };
+
+  // 조건 수정
+  const handleEditCondition = (index: number) => {
+    const condition = savedConditions[index];
+    setConditionContent(condition.content);
+    setEditingConditionIndex(index);
+  };
+
+  // 조건 삭제
+  const handleDeleteCondition = (index: number) => {
+    setSavedConditions(savedConditions.filter((_, i) => i !== index));
   };
 
   return (
@@ -671,6 +758,126 @@ export function LessonForm() {
                 onClick={handleAddContact}
               >
                 {editingContactIndex !== null ? "연락처 수정" : "연락처 추가"}
+              </Button>
+            </div>
+
+            {/* 공지사항 */}
+            <div className="space-y-4">
+              <Label className="text-base">Notice</Label>
+
+              {/* 저장된 공지사항 표시 */}
+              {savedNotices.length > 0 && (
+                <div className="space-y-2">
+                  {savedNotices.map((notice, index) => (
+                    <div 
+                      key={index} 
+                      className="relative rounded-lg border p-3 bg-muted"
+                    >
+                      <div className="pr-20 text-sm">
+                        {notice.content}
+                      </div>
+
+                      {/* 수정/삭제 버튼 */}
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditNotice(index)}
+                        >
+                          수정
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleDeleteNotice(index)}
+                        >
+                          삭제
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col space-y-1.5">
+                <Input 
+                  id="notice_content" 
+                  placeholder="공지사항을 입력하세요" 
+                  value={noticeContent}
+                  onChange={(e) => setNoticeContent(e.target.value)}
+                />
+              </div>
+
+              {/* 적용/수정 버튼 */}
+              <Button
+                type="button"
+                className="w-full"
+                onClick={handleAddNotice}
+              >
+                {editingNoticeIndex !== null ? "공지사항 수정" : "공지사항 추가"}
+              </Button>
+            </div>
+
+            {/* 조건 */}
+            <div className="space-y-4">
+              <Label className="text-base">Condition</Label>
+
+              {/* 저장된 조건 표시 */}
+              {savedConditions.length > 0 && (
+                <div className="space-y-2">
+                  {savedConditions.map((condition, index) => (
+                    <div 
+                      key={index} 
+                      className="relative rounded-lg border p-3 bg-muted"
+                    >
+                      <div className="pr-20 text-sm">
+                        {condition.content}
+                      </div>
+
+                      {/* 수정/삭제 버튼 */}
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditCondition(index)}
+                        >
+                          수정
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => handleDeleteCondition(index)}
+                        >
+                          삭제
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col space-y-1.5">
+                <Input 
+                  id="condition_content" 
+                  placeholder="조건을 입력하세요" 
+                  value={conditionContent}
+                  onChange={(e) => setConditionContent(e.target.value)}
+                />
+              </div>
+
+              {/* 적용/수정 버튼 */}
+              <Button
+                type="button"
+                className="w-full"
+                onClick={handleAddCondition}
+              >
+                {editingConditionIndex !== null ? "조건 수정" : "조건 추가"}
               </Button>
             </div>
 
