@@ -159,7 +159,7 @@ export function ProfileList({ onLogin, currentProfile }: ProfileListProps) {
             등록된 프로필이 없습니다.
           </div>
         ) : (
-          <div className="grid gap-6">
+          <div className="grid">
             {profiles.map((profile) => (
               <div 
                 key={profile.profile_id} 
