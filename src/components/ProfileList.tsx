@@ -3,7 +3,7 @@
 import * as React from "react"
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
-import { ChevronDown, Plus } from "lucide-react"
+import { ChevronDown, Plus, MoreHorizontal } from "lucide-react"
 
 import {
   Card,
@@ -24,6 +24,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ProfileForm } from "@/components/ProfileForm"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 type ProfileData = {
   profile_id: string;
@@ -48,6 +54,7 @@ export function ProfileList() {
   const [profiles, setProfiles] = React.useState<ProfileData[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [open, setOpen] = React.useState(false)
+  const [selectedProfile, setSelectedProfile] = React.useState<ProfileData | null>(null)
 
   // 프로필 목록 조회
   const fetchProfiles = async () => {
@@ -87,8 +94,9 @@ export function ProfileList() {
 
   // 프로필 저장 완료 후 콜백
   const handleProfileSaved = () => {
-    setOpen(false) // 다이얼로그 닫기
-    fetchProfiles() // 프로필 목록 새로고침
+    setOpen(false)
+    setSelectedProfile(null)
+    fetchProfiles()
   }
 
   return (
@@ -109,13 +117,18 @@ export function ProfileList() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Create Profile</DialogTitle>
+                <DialogTitle>
+                  {selectedProfile ? "프로필 수정" : "프로필 생성"}
+                </DialogTitle>
                 <DialogDescription>
-                  프로필을 생성합니다.
+                  {selectedProfile ? "프로필 정보를 수정합니다." : "새로운 프로필을 생성합니다."}
                 </DialogDescription>
               </DialogHeader>
               <div className="mt-4">
-                <ProfileForm onSaved={handleProfileSaved} />
+                <ProfileForm 
+                  profile={selectedProfile}
+                  onSaved={handleProfileSaved} 
+                />
               </div>
             </DialogContent>
           </Dialog>
@@ -152,14 +165,21 @@ export function ProfileList() {
                     </p>
                   </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="ml-auto"
-                >
-                  {profile.is_instructor ? "강사" : "수강생"}
-                  <ChevronDown className="ml-2 h-4 w-4 text-muted-foreground" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => {
+                      setSelectedProfile(profile)
+                      setOpen(true)
+                    }}>
+                      수정
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ))}
           </div>

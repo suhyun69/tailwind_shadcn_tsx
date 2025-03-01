@@ -46,10 +46,11 @@ type ProfileData = {
 };
 
 type ProfileFormProps = {
+  profile?: ProfileData | null;
   onSaved?: () => void;
 }
 
-export function ProfileForm({ onSaved }: ProfileFormProps) {
+export function ProfileForm({ profile, onSaved }: ProfileFormProps) {
   // 랜덤 ID 생성 함수
   const generateRandomId = () => {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -58,22 +59,20 @@ export function ProfileForm({ onSaved }: ProfileFormProps) {
     ).join('');
   };
 
-  // 상태 관리
-  const [profileId] = React.useState(generateRandomId())
-  const [nickname, setNickname] = React.useState("")
-  const [sex, setSex] = React.useState("")
-  const [isInstructor, setIsInstructor] = React.useState(false)
-
-  // Account 관련 상태 추가
-  const [bank, setBank] = React.useState("")
-  const [account, setAccount] = React.useState("")
-  const [accountOwner, setAccountOwner] = React.useState("")
+  // 초기값 설정
+  const [profileId] = React.useState(profile?.profile_id || generateRandomId())
+  const [nickname, setNickname] = React.useState(profile?.nickname || "")
+  const [sex, setSex] = React.useState(profile?.sex || "")
+  const [isInstructor, setIsInstructor] = React.useState(profile?.is_instructor || false)
+  const [bank, setBank] = React.useState(profile?.bank_info?.bank || "")
+  const [account, setAccount] = React.useState(profile?.bank_info?.account || "")
+  const [accountOwner, setAccountOwner] = React.useState(profile?.bank_info?.owner || "")
+  const [savedContacts, setSavedContacts] = React.useState<ContactInfo[]>(profile?.contacts || [])
 
   // Contact 관련 상태 추가
   const [contactType, setContactType] = React.useState("")
   const [contactAddress, setContactAddress] = React.useState("")
   const [contactName, setContactName] = React.useState("")
-  const [savedContacts, setSavedContacts] = React.useState<ContactInfo[]>([])
   const [editingContactIndex, setEditingContactIndex] = React.useState<number | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
 
@@ -117,7 +116,7 @@ export function ProfileForm({ onSaved }: ProfileFormProps) {
       // Supabase에 데이터 저장
       const { data, error } = await supabase
         .from('profiles')
-        .insert([profileData])
+        .upsert([profileData])
         .select()
         .single();
 
