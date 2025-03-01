@@ -3,7 +3,7 @@
 import * as React from "react"
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Plus } from "lucide-react"
 
 import {
   Card,
@@ -15,6 +15,15 @@ import {
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { ProfileForm } from "@/components/ProfileForm"
 
 type ProfileData = {
   profile_id: string;
@@ -38,6 +47,7 @@ type ContactInfo = {
 export function ProfileList() {
   const [profiles, setProfiles] = React.useState<ProfileData[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
+  const [open, setOpen] = React.useState(false)
 
   // 프로필 목록 조회
   const fetchProfiles = async () => {
@@ -75,13 +85,41 @@ export function ProfileList() {
     return bankMap[code] || code;
   };
 
+  // 프로필 저장 완료 후 콜백
+  const handleProfileSaved = () => {
+    setOpen(false) // 다이얼로그 닫기
+    fetchProfiles() // 프로필 목록 새로고침
+  }
+
   return (
     <Card className="rounded-xl">
       <CardHeader className="p-6">
-        <CardTitle className="font-semibold leading-none tracking-tight">프로필 목록</CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
-          등록된 프로필 정보를 확인할 수 있습니다.
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="font-semibold leading-none tracking-tight">프로필 목록</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
+              등록된 프로필 정보를 확인할 수 있습니다.
+            </CardDescription>
+          </div>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button size="icon" className="h-8 w-8">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>프로필 생성</DialogTitle>
+                <DialogDescription>
+                  새로운 프로필을 생성합니다.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4">
+                <ProfileForm onSaved={handleProfileSaved} />
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent className="p-6 pt-0">
         {isLoading ? (

@@ -45,7 +45,11 @@ type ProfileData = {
   };
 };
 
-export function ProfileForm() {
+type ProfileFormProps = {
+  onSaved?: () => void;
+}
+
+export function ProfileForm({ onSaved }: ProfileFormProps) {
   // 랜덤 ID 생성 함수
   const generateRandomId = () => {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -131,6 +135,7 @@ export function ProfileForm() {
       setContactName("");
       setSavedContacts([]);
       
+      onSaved?.(); // 저장 완료 후 콜백 호출
     } catch (error) {
       console.error('저장 중 오류 발생:', error);
       toast.error("저장 중 오류가 발생했습니다.");
