@@ -83,9 +83,10 @@ export function ProfileForm({ onSaved }: ProfileFormProps) {
     setIsLoading(true)
     
     try {
-      // 필수 입력값 검증
+      // 필수 입력값 검증 (닉네임과 성별만 필수)
       if (!nickname || !sex) {
         toast.error("필수 항목을 모두 입력해주세요.");
+        setIsLoading(false);
         return;
       }
 
@@ -98,14 +99,15 @@ export function ProfileForm({ onSaved }: ProfileFormProps) {
         contacts: savedContacts,
       };
 
-      // 강사인 경우 계좌 정보 추가
-      if (isInstructor) {
+      // 계좌 정보가 부분적으로 입력된 경우에만 검증
+      if (isInstructor && (bank || account || accountOwner)) {
         if (!bank || !account || !accountOwner) {
           toast.error("계좌 정보를 모두 입력해주세요.");
+          setIsLoading(false);
           return;
         }
         
-        profileData['bank_info'] = {
+        profileData.bank_info = {
           bank,
           account,
           owner: accountOwner
@@ -122,20 +124,8 @@ export function ProfileForm({ onSaved }: ProfileFormProps) {
       if (error) throw error;
 
       toast.success("프로필이 저장되었습니다.");
+      onSaved?.();
       
-      // 폼 초기화
-      setNickname("");
-      setSex("");
-      setIsInstructor(false);
-      setBank("");
-      setAccount("");
-      setAccountOwner("");
-      setContactType("");
-      setContactAddress("");
-      setContactName("");
-      setSavedContacts([]);
-      
-      onSaved?.(); // 저장 완료 후 콜백 호출
     } catch (error) {
       console.error('저장 중 오류 발생:', error);
       toast.error("저장 중 오류가 발생했습니다.");
