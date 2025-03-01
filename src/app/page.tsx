@@ -15,7 +15,7 @@ export default function Home() {
       {/* 메인 콘텐츠 */}
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
         {/* 카드 아이템들 */}
-        <ProfileForm />
+        {/* <ProfileForm /> */}
         <ProfileList />
         <div className="bg-white shadow-md rounded-xl p-6">
           <h2 className="text-xl font-semibold">카드 1</h2>

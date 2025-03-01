@@ -109,9 +109,9 @@ export function ProfileList() {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>프로필 생성</DialogTitle>
+                <DialogTitle>Create Profile</DialogTitle>
                 <DialogDescription>
-                  새로운 프로필을 생성합니다.
+                  프로필을 생성합니다.
                 </DialogDescription>
               </DialogHeader>
               <div className="mt-4">
