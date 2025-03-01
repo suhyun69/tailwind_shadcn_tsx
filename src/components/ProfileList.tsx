@@ -50,7 +50,12 @@ type ContactInfo = {
   name: string;
 }
 
-export function ProfileList() {
+type ProfileListProps = {
+  onLogin?: (profile: ProfileData) => void;
+  currentProfile?: ProfileData | null;
+}
+
+export function ProfileList({ onLogin, currentProfile }: ProfileListProps) {
   const [profiles, setProfiles] = React.useState<ProfileData[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [open, setOpen] = React.useState(false)
@@ -156,7 +161,11 @@ export function ProfileList() {
         ) : (
           <div className="grid gap-6">
             {profiles.map((profile) => (
-              <div key={profile.profile_id} className="flex items-center justify-between space-x-4">
+              <div 
+                key={profile.profile_id} 
+                className={`flex items-center justify-between space-x-4 p-3 rounded-lg transition-colors
+                  ${currentProfile?.profile_id === profile.profile_id ? 'bg-blue-50' : ''}`}
+              >
                 <div className="flex items-center space-x-4">
                   <Avatar>
                     <AvatarFallback>
@@ -187,6 +196,9 @@ export function ProfileList() {
                       setOpen(true)
                     }}>
                       수정
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onLogin?.(profile)}>
+                      로그인
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

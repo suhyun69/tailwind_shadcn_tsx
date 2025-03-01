@@ -1,10 +1,16 @@
+"use client"
+
+import { useState } from "react"
 import Image from "next/image";
 import { CardWithForm } from "@/components/CardWithForm";
 import { LessonForm } from "@/components/LessonForm";
 import { ProfileForm } from "@/components/ProfileForm";
 import { ProfileList } from "@/components/ProfileList";
+import { ProfileData } from "@/types/profile"
 
 export default function Home() {
+  const [currentProfile, setCurrentProfile] = useState<ProfileData | null>(null)
+
   return (
     <div className="container mx-auto px-4">
       {/* 헤더 */}
@@ -16,7 +22,10 @@ export default function Home() {
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
         {/* 카드 아이템들 */}
         {/* <ProfileForm /> */}
-        <ProfileList />
+        <ProfileList 
+          onLogin={setCurrentProfile}
+          currentProfile={currentProfile}
+        />
         <div className="bg-white shadow-md rounded-xl p-6">
           <h2 className="text-xl font-semibold">카드 1</h2>
           <p className="text-gray-600">PC에서는 3개, 태블릿에서는 2개, 모바일에서는 1개</p>
