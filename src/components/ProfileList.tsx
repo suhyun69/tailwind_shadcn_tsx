@@ -99,6 +99,14 @@ export function ProfileList() {
     fetchProfiles()
   }
 
+  // Dialog가 닫힐 때마다 초기화
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open)
+    if (!open) {
+      setSelectedProfile(null)
+    }
+  }
+
   return (
     <Card className="rounded-xl">
       <CardHeader className="p-6">
@@ -109,13 +117,13 @@ export function ProfileList() {
               등록된 프로필 정보를 확인할 수 있습니다.
             </CardDescription>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
+          <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
               <Button size="icon" className="h-8 w-8">
                 <Plus className="h-4 w-4" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto" closeButton={false}>
               <DialogHeader>
                 <DialogTitle>
                   {selectedProfile ? "프로필 수정" : "프로필 생성"}
@@ -126,8 +134,10 @@ export function ProfileList() {
               </DialogHeader>
               <div className="mt-4">
                 <ProfileForm 
+                  key={open ? '1' : '0'} // Dialog가 열릴 때마다 컴포넌트 새로 마운트
                   profile={selectedProfile}
-                  onSaved={handleProfileSaved} 
+                  onSaved={handleProfileSaved}
+                  onCancel={() => handleOpenChange(false)}
                 />
               </div>
             </DialogContent>
