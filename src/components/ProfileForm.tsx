@@ -48,9 +48,10 @@ type ProfileData = {
 type ProfileFormProps = {
   profile?: ProfileData | null;
   onSaved?: () => void;
+  onCancel?: () => void;
 }
 
-export function ProfileForm({ profile, onSaved }: ProfileFormProps) {
+export function ProfileForm({ profile, onSaved, onCancel }: ProfileFormProps) {
   // 랜덤 ID 생성 함수
   const generateRandomId = () => {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -395,7 +396,7 @@ export function ProfileForm({ profile, onSaved }: ProfileFormProps) {
         )}
       </div>
       <div className="flex justify-between mt-6">
-        <Button variant="outline" type="button">Cancel</Button>
+        <Button variant="outline" type="button" onClick={onCancel}>Cancel</Button>
         <Button 
           type="submit" 
           onClick={handleSubmit} 
