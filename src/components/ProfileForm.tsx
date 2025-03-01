@@ -113,16 +113,18 @@ export function ProfileForm({ profile, onSaved }: ProfileFormProps) {
         };
       }
 
-      // Supabase에 데이터 저장
+      // Supabase에 데이터 저장 (upsert)
       const { data, error } = await supabase
         .from('profiles')
-        .upsert([profileData])
+        .upsert([profileData], {
+          onConflict: 'profile_id'  // profile_id가 같으면 업데이트
+        })
         .select()
         .single();
 
       if (error) throw error;
 
-      toast.success("프로필이 저장되었습니다.");
+      toast.success(profile ? "프로필이 수정되었습니다." : "프로필이 생성되었습니다.");
       onSaved?.();
       
     } catch (error) {
