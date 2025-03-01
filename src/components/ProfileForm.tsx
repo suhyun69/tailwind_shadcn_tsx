@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { toast } from 'sonner'
+import { supabase } from '@/lib/supabase'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -30,6 +32,19 @@ type ContactInfo = {
   name: string;
 }
 
+type ProfileData = {
+  profile_id: string;
+  nickname: string;
+  sex: string;
+  is_instructor: boolean;
+  contacts: ContactInfo[];
+  bank_info?: {
+    bank: string;
+    account: string;
+    owner: string;
+  };
+};
+
 export function ProfileForm() {
   // 랜덤 ID 생성 함수
   const generateRandomId = () => {
@@ -40,7 +55,7 @@ export function ProfileForm() {
   };
 
   // 상태 관리
-  const [userId] = React.useState(generateRandomId())  // 컴포넌트 마운트 시 한 번만 생성
+  const [profileId] = React.useState(generateRandomId())
   const [nickname, setNickname] = React.useState("")
   const [sex, setSex] = React.useState("")
   const [isInstructor, setIsInstructor] = React.useState(false)
@@ -56,26 +71,72 @@ export function ProfileForm() {
   const [contactName, setContactName] = React.useState("")
   const [savedContacts, setSavedContacts] = React.useState<ContactInfo[]>([])
   const [editingContactIndex, setEditingContactIndex] = React.useState<number | null>(null)
+  const [isLoading, setIsLoading] = React.useState(false)
 
   // 폼 제출 핸들러
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
     
-    // 유효성 검사
-    if (!nickname || !sex) {
-      alert("모든 필수 항목을 입력해주세요.");
-      return;
+    try {
+      // 필수 입력값 검증
+      if (!nickname || !sex) {
+        toast.error("필수 항목을 모두 입력해주세요.");
+        return;
+      }
+
+      // 프로필 데이터 구성
+      const profileData: ProfileData = {
+        profile_id: profileId,
+        nickname,
+        sex,
+        is_instructor: isInstructor,
+        contacts: savedContacts,
+      };
+
+      // 강사인 경우 계좌 정보 추가
+      if (isInstructor) {
+        if (!bank || !account || !accountOwner) {
+          toast.error("계좌 정보를 모두 입력해주세요.");
+          return;
+        }
+        
+        profileData['bank_info'] = {
+          bank,
+          account,
+          owner: accountOwner
+        };
+      }
+
+      // Supabase에 데이터 저장
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert([profileData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("프로필이 저장되었습니다.");
+      
+      // 폼 초기화
+      setNickname("");
+      setSex("");
+      setIsInstructor(false);
+      setBank("");
+      setAccount("");
+      setAccountOwner("");
+      setContactType("");
+      setContactAddress("");
+      setContactName("");
+      setSavedContacts([]);
+      
+    } catch (error) {
+      console.error('저장 중 오류 발생:', error);
+      toast.error("저장 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
     }
-
-    // 데이터 처리 로직
-    const profileData = {
-      nickname,
-      sex,
-      isInstructor
-    };
-
-    console.log(profileData);
-    // TODO: API 호출 등 데이터 처리
   }
 
   // Contact 관련 핸들러 추가
@@ -132,10 +193,10 @@ export function ProfileForm() {
               
               {/* ID */}
               <div className="grid gap-2">
-                <Label htmlFor="userId" className="text-sm">ID</Label>
+                <Label htmlFor="profileId" className="text-sm">ID</Label>
                 <Input 
-                  id="userId" 
-                  value={userId}
+                  id="profileId" 
+                  value={profileId}
                   disabled
                   className="bg-muted"
                 />
@@ -347,7 +408,20 @@ export function ProfileForm() {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline" type="button">Cancel</Button>
-        <Button type="submit" onClick={handleSubmit}>Save</Button>
+        <Button 
+          type="submit" 
+          onClick={handleSubmit} 
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <span className="mr-2">저장 중...</span>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            </>
+          ) : (
+            "Save"
+          )}
+        </Button>
       </CardFooter>
     </Card>
   )
