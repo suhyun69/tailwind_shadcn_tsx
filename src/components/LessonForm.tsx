@@ -403,7 +403,7 @@ export function LessonForm() {
   };
 
   return (
-    <Card className="w-[350px]">
+    <Card /*className="w-[350px]"*/ >
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Create Lesson</CardTitle>
         <CardDescription className="text-sm text-muted-foreground">수업을 생성합니다.</CardDescription>
