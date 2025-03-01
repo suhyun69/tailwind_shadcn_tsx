@@ -57,6 +57,16 @@ type ConditionInfo = {
   content: string;
 }
 
+// SubtextInfo 타입 정의 추가
+type SubtextInfo = {
+  content: string;
+}
+
+// SubtextForDiscountInfo 타입 정의 추가
+type SubtextForDiscountInfo = {
+  content: string;
+}
+
 export function LessonForm() {
 
   const [startDate, setStartDate] = React.useState<Date>()
@@ -84,6 +94,12 @@ export function LessonForm() {
   const [editingConditionIndex, setEditingConditionIndex] = React.useState<number | null>(null)
   const [isStartDateOpen, setIsStartDateOpen] = React.useState(false)
   const [isEndDateOpen, setIsEndDateOpen] = React.useState(false)
+  const [subtextContent, setSubtextContent] = React.useState("")
+  const [savedSubtexts, setSavedSubtexts] = React.useState<SubtextInfo[]>([])
+  const [editingSubtextIndex, setEditingSubtextIndex] = React.useState<number | null>(null)
+  const [discountSubtextContent, setDiscountSubtextContent] = React.useState("")
+  const [savedDiscountSubtexts, setSavedDiscountSubtexts] = React.useState<SubtextForDiscountInfo[]>([])
+  const [editingDiscountSubtextIndex, setEditingDiscountSubtextIndex] = React.useState<number | null>(null)
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -319,6 +335,73 @@ export function LessonForm() {
     setSavedConditions(savedConditions.filter((_, i) => i !== index));
   };
 
+  // 종료일 다음에 추가
+  // Subtext for date
+  const handleAddSubtext = () => {
+    if (!subtextContent) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+
+    const newSubtext: SubtextInfo = {
+      content: subtextContent
+    };
+
+    if (editingSubtextIndex !== null) {
+      const newSubtexts = [...savedSubtexts];
+      newSubtexts[editingSubtextIndex] = newSubtext;
+      setSavedSubtexts(newSubtexts);
+      setEditingSubtextIndex(null);
+    } else {
+      setSavedSubtexts([...savedSubtexts, newSubtext]);
+    }
+
+    setSubtextContent("");
+  };
+
+  const handleEditSubtext = (index: number) => {
+    const subtext = savedSubtexts[index];
+    setSubtextContent(subtext.content);
+    setEditingSubtextIndex(index);
+  };
+
+  const handleDeleteSubtext = (index: number) => {
+    setSavedSubtexts(savedSubtexts.filter((_, i) => i !== index));
+  };
+
+  // 할인 정보 입력 영역 내부에 추가
+  const handleAddDiscountSubtext = () => {
+    if (!discountSubtextContent) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+
+    const newSubtext: SubtextForDiscountInfo = {
+      content: discountSubtextContent
+    };
+
+    if (editingDiscountSubtextIndex !== null) {
+      const newSubtexts = [...savedDiscountSubtexts];
+      newSubtexts[editingDiscountSubtextIndex] = newSubtext;
+      setSavedDiscountSubtexts(newSubtexts);
+      setEditingDiscountSubtextIndex(null);
+    } else {
+      setSavedDiscountSubtexts([...savedDiscountSubtexts, newSubtext]);
+    }
+
+    setDiscountSubtextContent("");
+  };
+
+  const handleEditDiscountSubtext = (index: number) => {
+    const subtext = savedDiscountSubtexts[index];
+    setDiscountSubtextContent(subtext.content);
+    setEditingDiscountSubtextIndex(index);
+  };
+
+  const handleDeleteDiscountSubtext = (index: number) => {
+    setSavedDiscountSubtexts(savedDiscountSubtexts.filter((_, i) => i !== index));
+  };
+
   return (
     <Card className="w-[350px]">
       <CardHeader className="space-y-1">
@@ -446,6 +529,73 @@ export function LessonForm() {
                     />
                   </PopoverContent>
                 </Popover>
+              </div>
+
+              {/* 종료일 다음에 추가 */}
+              {/* Subtext for date */}
+              <div className="space-y-4">
+                {/* <Label className="text-sm">Subtext for date</Label> */}
+                
+                {/* 저장된 subtext 표시 */}
+                {savedSubtexts.length > 0 && (
+                  <div className="space-y-2">
+                    {savedSubtexts.map((subtext, index) => (
+                      <div 
+                        key={index} 
+                        className="relative rounded-lg border p-3 bg-muted"
+                      >
+                        <div className="pr-16 text-sm break-words">
+                          {subtext.content}
+                        </div>
+
+                        {/* 수정/삭제 버튼 */}
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleEditSubtext(index)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-destructive"
+                            onClick={() => handleDeleteSubtext(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 입력 영역 */}
+                <div className="flex gap-2">
+                  <Input 
+                    id="subtext_content" 
+                    placeholder="날짜 관련 추가 설명을 입력하세요" 
+                    value={subtextContent}
+                    onChange={(e) => setSubtextContent(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAddSubtext();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddSubtext}
+                    className="shrink-0"
+                  >
+                    {editingSubtextIndex !== null ? "수정" : "입력"}
+                  </Button>
+                </div>
               </div>
 
               {/* 시작 시간 */}
@@ -695,6 +845,72 @@ export function LessonForm() {
                       {editingIndex !== null ? "수정" : "입력"}
                     </Button>
                   </div>
+                </div>
+              </div>
+
+              {/* Subtext for discount */}
+              <div className="space-y-4">
+                {/* <Label className="text-sm">Subtext for discount</Label> */}
+                
+                {/* 저장된 subtext 표시 */}
+                {savedDiscountSubtexts.length > 0 && (
+                  <div className="space-y-2">
+                    {savedDiscountSubtexts.map((subtext, index) => (
+                      <div 
+                        key={index} 
+                        className="relative rounded-lg border p-3 bg-muted"
+                      >
+                        <div className="pr-16 text-sm break-words">
+                          {subtext.content}
+                        </div>
+
+                        {/* 수정/삭제 버튼 */}
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleEditDiscountSubtext(index)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-destructive"
+                            onClick={() => handleDeleteDiscountSubtext(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 입력 영역 */}
+                <div className="flex gap-2">
+                  <Input 
+                    id="discount_subtext_content" 
+                    placeholder="할인 관련 추가 설명을 입력하세요" 
+                    value={discountSubtextContent}
+                    onChange={(e) => setDiscountSubtextContent(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAddDiscountSubtext();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddDiscountSubtext}
+                    className="shrink-0"
+                  >
+                    {editingDiscountSubtextIndex !== null ? "수정" : "입력"}
+                  </Button>
                 </div>
               </div>
             </div>
