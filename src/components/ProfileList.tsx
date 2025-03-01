@@ -103,11 +103,14 @@ export function ProfileList() {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium leading-none">{profile.nickname}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium leading-none">{profile.nickname}</p>
+                      {profile.is_instructor && (
+                        <Badge variant="secondary" className="text-xs">강사</Badge>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">
-                      {profile.contacts.map(contact => 
-                        contact.type === 'phone' ? contact.address : null
-                      ).filter(Boolean)[0]}
+                      {profile.profile_id}
                     </p>
                   </div>
                 </div>
