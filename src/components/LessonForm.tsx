@@ -69,6 +69,11 @@ type SubtextForDiscountInfo = {
   content: string;
 }
 
+// 1. 타입 이름 변경
+type DateSubtextInfo = {
+  content: string;
+}
+
 type LessonData = {
   lesson_id?: string;
   title: string;
@@ -132,6 +137,9 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [bank, setBank] = useState(lesson?.bank || '')
   const [accountNumber, setAccountNumber] = useState(lesson?.account_number || '')
   const [accountOwner, setAccountOwner] = useState(lesson?.account_owner || '')
+  const [dateSubtextContent, setDateSubtextContent] = React.useState("")
+  const [savedDateSubtexts, setSavedDateSubtexts] = React.useState<DateSubtextInfo[]>([])
+  const [editingDateSubtextIndex, setEditingDateSubtextIndex] = React.useState<number | null>(null)
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -369,36 +377,36 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
 
   // 종료일 다음에 추가
   // Subtext for date
-  const handleAddSubtext = () => {
-    if (!subtextContent) {
+  const handleAddDateSubtext = () => {
+    if (!dateSubtextContent) {
       alert("내용을 입력해주세요.");
       return;
     }
 
-    const newSubtext: SubtextInfo = {
-      content: subtextContent
+    const newSubtext: DateSubtextInfo = {
+      content: dateSubtextContent
     };
 
-    if (editingSubtextIndex !== null) {
-      const newSubtexts = [...savedSubtexts];
-      newSubtexts[editingSubtextIndex] = newSubtext;
-      setSavedSubtexts(newSubtexts);
-      setEditingSubtextIndex(null);
+    if (editingDateSubtextIndex !== null) {
+      const newSubtexts = [...savedDateSubtexts];
+      newSubtexts[editingDateSubtextIndex] = newSubtext;
+      setSavedDateSubtexts(newSubtexts);
+      setEditingDateSubtextIndex(null);
     } else {
-      setSavedSubtexts([...savedSubtexts, newSubtext]);
+      setSavedDateSubtexts([...savedDateSubtexts, newSubtext]);
     }
 
-    setSubtextContent("");
+    setDateSubtextContent("");
   };
 
-  const handleEditSubtext = (index: number) => {
-    const subtext = savedSubtexts[index];
-    setSubtextContent(subtext.content);
-    setEditingSubtextIndex(index);
+  const handleEditDateSubtext = (index: number) => {
+    const subtext = savedDateSubtexts[index];
+    setDateSubtextContent(subtext.content);
+    setEditingDateSubtextIndex(index);
   };
 
-  const handleDeleteSubtext = (index: number) => {
-    setSavedSubtexts(savedSubtexts.filter((_, i) => i !== index));
+  const handleDeleteDateSubtext = (index: number) => {
+    setSavedDateSubtexts(savedDateSubtexts.filter((_, i) => i !== index));
   };
 
   // 할인 정보 입력 영역 내부에 추가
@@ -464,7 +472,7 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
         contacts: savedContacts || [],
         notices: savedNotices || [],
         conditions: savedConditions || [],
-        subtexts: savedSubtexts || [],
+        date_subtexts: savedDateSubtexts || [],
         discount_subtexts: savedDiscountSubtexts || [],
         bank,
         account_number: accountNumber,
@@ -630,9 +638,9 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
                 {/* <Label className="text-sm">Subtext for date</Label> */}
                 
                 {/* 저장된 subtext 표시 */}
-                {savedSubtexts.length > 0 && (
+                {savedDateSubtexts.length > 0 && (
                   <div className="space-y-2">
-                    {savedSubtexts.map((subtext, index) => (
+                    {savedDateSubtexts.map((subtext, index) => (
                       <div 
                         key={index} 
                         className="relative rounded-lg border p-3 bg-muted"
@@ -648,7 +656,7 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0"
-                            onClick={() => handleEditSubtext(index)}
+                            onClick={() => handleEditDateSubtext(index)}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -657,7 +665,7 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
                             variant="ghost"
                             size="sm"
                             className="h-8 w-8 p-0 text-destructive"
-                            onClick={() => handleDeleteSubtext(index)}
+                            onClick={() => handleDeleteDateSubtext(index)}
                           >
                             <X className="h-4 w-4" />
                           </Button>
@@ -670,23 +678,23 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
                 {/* 입력 영역 */}
                 <div className="flex gap-2">
                   <Input 
-                    id="subtext_content" 
+                    id="date_subtext_content" 
                     placeholder="날짜 관련 추가 설명을 입력하세요" 
-                    value={subtextContent}
-                    onChange={(e) => setSubtextContent(e.target.value)}
+                    value={dateSubtextContent}
+                    onChange={(e) => setDateSubtextContent(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
-                        handleAddSubtext();
+                        handleAddDateSubtext();
                       }
                     }}
                   />
                   <Button
                     type="button"
-                    onClick={handleAddSubtext}
+                    onClick={handleAddDateSubtext}
                     className="shrink-0"
                   >
-                    {editingSubtextIndex !== null ? "수정" : "입력"}
+                    {editingDateSubtextIndex !== null ? "수정" : "입력"}
                   </Button>
                 </div>
               </div>
