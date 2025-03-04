@@ -75,6 +75,9 @@ type LessonData = {
   genre: string;
   instructor1?: string;
   instructor2?: string;
+  bank?: string;
+  account_number?: string;
+  account_owner?: string;
   // ... other fields
 }
 
@@ -126,6 +129,9 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [placeUrl, setPlaceUrl] = React.useState("")
   const [price, setPrice] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
+  const [bank, setBank] = useState(lesson?.bank || '')
+  const [accountNumber, setAccountNumber] = useState(lesson?.account_number || '')
+  const [accountOwner, setAccountOwner] = useState(lesson?.account_owner || '')
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -460,6 +466,9 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
         conditions: savedConditions || [],
         subtexts: savedSubtexts || [],
         discount_subtexts: savedDiscountSubtexts || [],
+        bank,
+        account_number: accountNumber,
+        account_owner: accountOwner,
         status: 'draft',
         created_at: new Date().toISOString()
       };
@@ -1003,7 +1012,7 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
             <div className="space-y-4">
               <Label className="text-sm">Account</Label>
               <div className="flex flex-col space-y-1.5">
-                <Select>
+                <Select value={bank} onValueChange={setBank}>
                   <SelectTrigger id="bank">
                     <SelectValue placeholder="은행을 선택하세요" />
                   </SelectTrigger>
@@ -1011,8 +1020,18 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
                     <SelectItem value="sh">신한</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input id="account" placeholder="계좌번호를 입력하세요" />
-                <Input id="account_owner" placeholder="계좌주를 입력하세요" />
+                <Input 
+                  id="account" 
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  placeholder="계좌번호를 입력하세요" 
+                />
+                <Input 
+                  id="account_owner" 
+                  value={accountOwner}
+                  onChange={(e) => setAccountOwner(e.target.value)}
+                  placeholder="계좌주를 입력하세요" 
+                />
               </div>
             </div>
 
