@@ -7,6 +7,7 @@ import { LessonForm } from "@/components/LessonForm";
 import { ProfileForm } from "@/components/ProfileForm";
 import { ProfileList } from "@/components/ProfileList";
 import { ProfileData } from "@/types/profile"
+import { LessonList } from "@/components/LessonList";
 
 export default function Home() {
   const [currentProfile, setCurrentProfile] = useState<ProfileData | null>(null)
@@ -26,6 +27,7 @@ export default function Home() {
           onLogin={setCurrentProfile}
           currentProfile={currentProfile}
         />
+        <LessonList />
         <div className="bg-white shadow-md rounded-xl p-6">
           <h2 className="text-xl font-semibold">카드 1</h2>
           <p className="text-gray-600">PC에서는 3개, 태블릿에서는 2개, 모바일에서는 1개</p>
