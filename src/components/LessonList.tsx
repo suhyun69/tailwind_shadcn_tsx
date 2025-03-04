@@ -151,7 +151,7 @@ export function LessonList() {
               수업 목록을 관리하세요
             </CardDescription>
           </div>
-          <Button onClick={() => router.push('/lessons/new')}>
+          <Button onClick={() => router.push('/lesson/form')}>
             <Plus className="mr-2 h-4 w-4" />
             Add Lesson
           </Button>
