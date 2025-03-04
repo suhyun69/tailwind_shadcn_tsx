@@ -31,6 +31,8 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { CalendarIcon, GripVertical, Pencil, X } from "lucide-react"
+import { toast } from "sonner"
+import { supabase } from "@/lib/supabase"
 
 // 할인 정보 타입 정의
 type DiscountInfo = {
@@ -67,7 +69,22 @@ type SubtextForDiscountInfo = {
   content: string;
 }
 
-export function LessonForm() {
+type LessonData = {
+  lesson_id?: string;
+  title: string;
+  genre: string;
+  instructor1?: string;
+  instructor2?: string;
+  // ... other fields
+}
+
+type LessonFormProps = {
+  lesson?: LessonData | null;
+  onSaved?: () => void;
+  onCancel?: () => void;
+}
+
+export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
 
   const [startDate, setStartDate] = React.useState<Date>()
   const [endDate, setEndDate] = React.useState<Date>()
@@ -100,6 +117,15 @@ export function LessonForm() {
   const [discountSubtextContent, setDiscountSubtextContent] = React.useState("")
   const [savedDiscountSubtexts, setSavedDiscountSubtexts] = React.useState<SubtextForDiscountInfo[]>([])
   const [editingDiscountSubtextIndex, setEditingDiscountSubtextIndex] = React.useState<number | null>(null)
+  const [title, setTitle] = React.useState("")
+  const [genre, setGenre] = React.useState("")
+  const [instructor1, setInstructor1] = React.useState("")
+  const [instructor2, setInstructor2] = React.useState("")
+  const [region, setRegion] = React.useState("")
+  const [place, setPlace] = React.useState("")
+  const [placeUrl, setPlaceUrl] = React.useState("")
+  const [price, setPrice] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
   
   // 시간 옵션 (0-23)
   const hourOptions = Array.from({ length: 24 }, (_, i) => 
@@ -402,6 +428,64 @@ export function LessonForm() {
     setSavedDiscountSubtexts(savedDiscountSubtexts.filter((_, i) => i !== index));
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Form submitted!');
+    
+    try {
+      if (!title || !genre) {
+        toast.error("제목과 장르는 필수 입력사항입니다.");
+        return;
+      }
+
+      setIsLoading(true);
+
+      const lessonData = {
+        lesson_id: lesson?.lesson_id || crypto.randomUUID(),
+        title,
+        genre,
+        instructor1,
+        instructor2,
+        region,
+        place,
+        place_url: placeUrl,
+        price,
+        start_date: startDate,
+        end_date: endDate,
+        start_time: startHour && startMinute ? `${startHour}:${startMinute}` : null,
+        end_time: endHour && endMinute ? `${endHour}:${endMinute}` : null,
+        discounts: savedDiscounts || [],
+        contacts: savedContacts || [],
+        notices: savedNotices || [],
+        conditions: savedConditions || [],
+        subtexts: savedSubtexts || [],
+        discount_subtexts: savedDiscountSubtexts || [],
+        status: 'draft',
+        created_at: new Date().toISOString()
+      };
+
+      console.log('Saving lesson data:', lessonData);
+
+      const { data, error } = await supabase
+        .from('lessons')
+        .upsert(lessonData)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log('Saved lesson:', data);
+      toast.success("수업이 저장되었습니다.");
+      onSaved?.();
+      
+    } catch (error) {
+      console.error('Error saving lesson:', error);
+      toast.error("저장에 실패했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card /*className="w-[350px]"*/ >
       <CardHeader className="space-y-1">
@@ -418,7 +502,7 @@ export function LessonForm() {
               {/* 장르 */}
               <div className="grid gap-2">
                 <Label htmlFor="genre" className="text-sm">Genre</Label>
-                <Select>
+                <Select value={genre} onValueChange={setGenre}>
                   <SelectTrigger id="genre">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -433,13 +517,13 @@ export function LessonForm() {
               {/* 타이틀 */}
               <div className="grid gap-2">
                 <Label htmlFor="title" className="text-sm">Title</Label>
-                <Input id="name" placeholder="title of your lesson" />
+                <Input id="name" placeholder="title of your lesson" value={title} onChange={(e) => setTitle(e.target.value)} />
               </div>
 
               {/* 강사1 */}
               <div className="grid gap-2">
                 <Label htmlFor="instructor1" className="text-sm">Instructor1</Label>
-                <Select>
+                <Select value={instructor1} onValueChange={setInstructor1}>
                   <SelectTrigger id="instructor1">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -454,7 +538,7 @@ export function LessonForm() {
               {/* 강사2 */}
               <div className="grid gap-2">
                 <Label htmlFor="instructor2" className="text-sm">Instructor2</Label>
-                <Select>
+                <Select value={instructor2} onValueChange={setInstructor2}>
                   <SelectTrigger id="instructor2">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -676,7 +760,7 @@ export function LessonForm() {
               {/* 지역 */}
               <div className="grid gap-2">
                 <Label htmlFor="region" className="text-sm">Region</Label>
-                <Select>
+                <Select value={region} onValueChange={setRegion}>
                   <SelectTrigger id="region">
                     <SelectValue placeholder="지역을 선택하세요" />
                   </SelectTrigger>
@@ -690,8 +774,8 @@ export function LessonForm() {
               {/* 장소 */}
               <div className="grid gap-2">
                 <Label htmlFor="place" className="text-sm">Place</Label>
-                <Input id="place" placeholder="장소를 입력하세요" />
-                <Input id="place_url" placeholder="장소 링크를 입력하세요" />
+                <Input id="place" placeholder="장소를 입력하세요" value={place} onChange={(e) => setPlace(e.target.value)} />
+                <Input id="place_url" placeholder="장소 링크를 입력하세요" value={placeUrl} onChange={(e) => setPlaceUrl(e.target.value)} />
               </div>
             </div>
 
@@ -702,7 +786,7 @@ export function LessonForm() {
               {/* 금액 */}
               <div className="grid gap-2">
                 <Label htmlFor="price" className="text-sm">Price</Label>
-                <Input id="price" placeholder="금액을 입력하세요" />
+                <Input id="price" placeholder="금액을 입력하세요" value={price} onChange={(e) => setPrice(e.target.value)} />
               </div>
 
               {/* 할인 정보 */}
@@ -1195,7 +1279,7 @@ export function LessonForm() {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline">Cancel</Button>
-        <Button>Deploy</Button>
+        <Button onClick={handleSubmit} disabled={isLoading}>Deploy</Button>
       </CardFooter>
     </Card>
   )
