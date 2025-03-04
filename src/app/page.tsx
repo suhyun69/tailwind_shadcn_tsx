@@ -36,7 +36,7 @@ export default function Home() {
           <h2 className="text-xl font-semibold">카드 1</h2>
           <p className="text-gray-600">PC에서는 3개, 태블릿에서는 2개, 모바일에서는 1개</p>
         </div>
-        <LessonForm />
+        {/* <LessonForm /> */}
         <div className="bg-white shadow-md rounded-xl p-6">
           <h2 className="text-xl font-semibold">카드 1</h2>
           <p className="text-gray-600">PC에서는 3개, 태블릿에서는 2개, 모바일에서는 1개</p>

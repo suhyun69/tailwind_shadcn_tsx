@@ -4,14 +4,6 @@ import { useState } from "react"
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -87,9 +79,9 @@ type LessonData = {
 }
 
 type LessonFormProps = {
-  lesson?: LessonData | null;
-  onSaved?: () => void;
-  onCancel?: () => void;
+  lesson?: LessonData | null
+  onSaved: (lessonData: any) => Promise<void>  // Promise 타입 추가
+  onCancel: () => void
 }
 
 export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
@@ -493,7 +485,7 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
 
       console.log('Saved lesson:', data);
       toast.success("수업이 저장되었습니다.");
-      onSaved?.();
+      onSaved(data);
       
     } catch (error) {
       console.error('Error saving lesson:', error);
@@ -504,810 +496,806 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
   };
 
   return (
-    <Card /*className="w-[350px]"*/ >
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl">Create Lesson</CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">수업을 생성합니다.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form>
-          <div className="grid w-full items-center gap-6">
-            {/* 기본 정보 섹션 */}
-            <div className="space-y-4">
-              <div className="text-base font-medium">Basic Info</div>
-              
-              {/* 장르 */}
-              <div className="grid gap-2">
-                <Label htmlFor="genre" className="text-sm">Genre</Label>
-                <Select value={genre} onValueChange={setGenre}>
-                  <SelectTrigger id="genre">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="salsa">살사</SelectItem>
-                    <SelectItem value="bachata">바차타</SelectItem>
-                    <SelectItem value="kizomba">키좀바</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {/* 기본 정보 섹션 */}
+      <div className="space-y-4">
+        <div className="text-lg font-medium">Basic Info</div>
+        
+        {/* 장르 */}
+        <div className="grid gap-2">
+          <Label htmlFor="genre">Genre</Label>
+          <Select value={genre} onValueChange={setGenre}>
+            <SelectTrigger id="genre">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="salsa">살사</SelectItem>
+              <SelectItem value="bachata">바차타</SelectItem>
+              <SelectItem value="kizomba">키좀바</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-              {/* 타이틀 */}
-              <div className="grid gap-2">
-                <Label htmlFor="title" className="text-sm">Title</Label>
-                <Input id="name" placeholder="title of your lesson" value={title} onChange={(e) => setTitle(e.target.value)} />
-              </div>
+        {/* 타이틀 */}
+        <div className="grid gap-2">
+          <Label htmlFor="title" className="text-sm">Title</Label>
+          <Input id="name" placeholder="title of your lesson" value={title} onChange={(e) => setTitle(e.target.value)} />
+        </div>
 
-              {/* 강사1 */}
-              <div className="grid gap-2">
-                <Label htmlFor="instructor1" className="text-sm">Instructor1</Label>
-                <Select value={instructor1} onValueChange={setInstructor1}>
-                  <SelectTrigger id="instructor1">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="browny">브라우니</SelectItem>
-                    <SelectItem value="kali">칼리</SelectItem>
-                    <SelectItem value="ㄴcarlett">스칼렛</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* 강사1 */}
+        <div className="grid gap-2">
+          <Label htmlFor="instructor1" className="text-sm">Instructor1</Label>
+          <Select value={instructor1} onValueChange={setInstructor1}>
+            <SelectTrigger id="instructor1">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="browny">브라우니</SelectItem>
+              <SelectItem value="kali">칼리</SelectItem>
+              <SelectItem value="ㄴcarlett">스칼렛</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-              {/* 강사2 */}
-              <div className="grid gap-2">
-                <Label htmlFor="instructor2" className="text-sm">Instructor2</Label>
-                <Select value={instructor2} onValueChange={setInstructor2}>
-                  <SelectTrigger id="instructor2">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="browny">브라우니</SelectItem>
-                    <SelectItem value="kali">칼리</SelectItem>
-                    <SelectItem value="ㄴcarlett">스칼렛</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+        {/* 강사2 */}
+        <div className="grid gap-2">
+          <Label htmlFor="instructor2" className="text-sm">Instructor2</Label>
+          <Select value={instructor2} onValueChange={setInstructor2}>
+            <SelectTrigger id="instructor2">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="browny">브라우니</SelectItem>
+              <SelectItem value="kali">칼리</SelectItem>
+              <SelectItem value="ㄴcarlett">스칼렛</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-            {/* 시간 정보 섹션 */}
-            <div className="space-y-4">
-              <div className="text-base font-medium">Time Info</div>
-              
-              {/* 시작일 */}
-              <div className="grid gap-2">
-                <Label htmlFor="start_date" className="text-sm">시작일</Label>
-                <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "yyyy-MM-dd") : "날짜를 선택하세요"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={(date) => {
-                        setStartDate(date);
-                        setIsStartDateOpen(false);
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* 종료일 */}
-              <div className="grid gap-2">
-                <Label htmlFor="end_date" className="text-sm">종료일</Label>
-                <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "yyyy-MM-dd") : "날짜를 선택하세요"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={(date) => {
-                        setEndDate(date);
-                        setIsEndDateOpen(false);
-                      }}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              {/* 종료일 다음에 추가 */}
-              {/* Subtext for date */}
-              <div className="space-y-4">
-                {/* <Label className="text-sm">Subtext for date</Label> */}
-                
-                {/* 저장된 subtext 표시 */}
-                {savedDateSubtexts.length > 0 && (
-                  <div className="space-y-2">
-                    {savedDateSubtexts.map((subtext, index) => (
-                      <div 
-                        key={index} 
-                        className="relative rounded-lg border p-3 bg-muted"
-                      >
-                        <div className="pr-16 text-sm break-words">
-                          {subtext.content}
-                        </div>
-
-                        {/* 수정/삭제 버튼 */}
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleEditDateSubtext(index)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-destructive"
-                            onClick={() => handleDeleteDateSubtext(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+      {/* 시간 정보 섹션 */}
+      <div className="space-y-4">
+        <div className="text-base font-medium">Time Info</div>
+        
+        {/* 시작일 */}
+        <div className="grid gap-2">
+          <Label htmlFor="start_date" className="text-sm">시작일</Label>
+          <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !startDate && "text-muted-foreground"
                 )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {startDate ? format(startDate, "yyyy-MM-dd") : "날짜를 선택하세요"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={(date) => {
+                  setStartDate(date);
+                  setIsStartDateOpen(false);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
-                {/* 입력 영역 */}
-                <div className="flex gap-2">
-                  <Input 
-                    id="date_subtext_content" 
-                    placeholder="날짜 관련 추가 설명을 입력하세요" 
-                    value={dateSubtextContent}
-                    onChange={(e) => setDateSubtextContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleAddDateSubtext();
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleAddDateSubtext}
-                    className="shrink-0"
-                  >
-                    {editingDateSubtextIndex !== null ? "수정" : "입력"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* 시작 시간 */}
-              <div className="grid gap-2">
-                <Label className="text-sm">시작 시간</Label>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Select value={startHour} onValueChange={setStartHour}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="시" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        {hourOptions.map((hour) => (
-                          <SelectItem key={hour} value={hour}>
-                            {hour}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex-1">
-                    <Select value={startMinute} onValueChange={setStartMinute}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="분" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        {minuteOptions.map((minute) => (
-                          <SelectItem key={minute} value={minute}>
-                            {minute}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              {/* 종료 시간 */}
-              <div className="grid gap-2">
-                <Label className="text-sm">종료 시간</Label>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <Select value={endHour} onValueChange={setEndHour}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="시" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        {hourOptions.map((hour) => (
-                          <SelectItem key={hour} value={hour}>
-                            {hour}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex-1">
-                    <Select value={endMinute} onValueChange={setEndMinute}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="분" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        {minuteOptions.map((minute) => (
-                          <SelectItem key={minute} value={minute}>
-                            {minute}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 장소 정보 섹션 */}
-            <div className="space-y-4">
-              <div className="text-base font-medium">Location Info</div>
-              
-              {/* 지역 */}
-              <div className="grid gap-2">
-                <Label htmlFor="region" className="text-sm">Region</Label>
-                <Select value={region} onValueChange={setRegion}>
-                  <SelectTrigger id="region">
-                    <SelectValue placeholder="지역을 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="hd">홍대</SelectItem>
-                    <SelectItem value="gn">강남</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* 장소 */}
-              <div className="grid gap-2">
-                <Label htmlFor="place" className="text-sm">Place</Label>
-                <Input id="place" placeholder="장소를 입력하세요" value={place} onChange={(e) => setPlace(e.target.value)} />
-                <Input id="place_url" placeholder="장소 링크를 입력하세요" value={placeUrl} onChange={(e) => setPlaceUrl(e.target.value)} />
-              </div>
-            </div>
-
-            {/* 가격 정보 섹션 */}
-            <div className="space-y-4">
-              <div className="text-base font-medium">Price Info</div>
-              
-              {/* 금액 */}
-              <div className="grid gap-2">
-                <Label htmlFor="price" className="text-sm">Price</Label>
-                <Input id="price" placeholder="금액을 입력하세요" value={price} onChange={(e) => setPrice(e.target.value)} />
-              </div>
-
-              {/* 할인 정보 */}
-              <div className="space-y-4">
-                <Label className="text-sm">Discount</Label>
-                
-                {/* 저장된 할인 정보 표시 */}
-                {savedDiscounts.length > 0 && (
-                  <div className="space-y-2">
-                    {savedDiscounts.map((discount, index) => (
-                      <div 
-                        key={index} 
-                        className="group relative rounded-lg border p-3 bg-muted"
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData('text/plain', index.toString());
-                          e.currentTarget.classList.add('dragging', 'opacity-50');
-                        }}
-                        onDragEnd={(e) => {
-                          e.currentTarget.classList.remove('dragging', 'opacity-50');
-                        }}
-                        onDragOver={(e) => {
-                          e.preventDefault();
-                          const draggingElement = document.querySelector('.dragging');
-                          const currentElement = e.currentTarget;
-                          if (!draggingElement || draggingElement === currentElement) return;
-                          
-                          const container = currentElement.parentElement;
-                          if (!container) return;
-                          
-                          const children = [...container.children];
-                          const currentIndex = children.indexOf(currentElement);
-                          const draggingIndex = children.indexOf(draggingElement);
-                          
-                          if (currentIndex > draggingIndex) {
-                            currentElement.after(draggingElement);
-                          } else {
-                            currentElement.before(draggingElement);
-                          }
-                        }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
-                          const toIndex = index;
-                          if (fromIndex === toIndex) return;
-                          
-                          handleReorderDiscount(fromIndex, toIndex);
-                        }}
-                      >
-                        {/* 드래그 핸들 */}
-                        <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move">
-                          <GripVertical className="h-4 w-4" />
-                        </div>
-
-                        {/* 할인 정보 내용 */}
-                        <div className="ml-6 flex flex-col space-y-1 text-sm">
-                          <div>
-                            <span>
-                              타입: {discount.type === "earlybird" ? "얼리버드" : "성별"}
-                            </span>
-                          </div>
-                          <div>
-                            {discount.type === "earlybird" ? (
-                              <span>
-                                마감일: {discount.date && format(new Date(discount.date), "yyyy-MM-dd")}
-                              </span>
-                            ) : (
-                              <span>대상: {discount.condition === "male" ? "남성" : "여성"}</span>
-                            )}
-                          </div>
-                          <div>
-                            할인금액: {discount.amount}원
-                          </div>
-                        </div>
-
-                        {/* 수정/삭제 버튼 */}
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleEditDiscount(index)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-destructive"
-                            onClick={() => handleDeleteDiscount(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+        {/* 종료일 */}
+        <div className="grid gap-2">
+          <Label htmlFor="end_date" className="text-sm">종료일</Label>
+          <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !endDate && "text-muted-foreground"
                 )}
-                
-                {/* 입력 영역 */}
-                <div className="space-y-2">
-                  <Select value={discountType} onValueChange={(value) => {
-                    setDiscountType(value);
-                    setDiscountCondition("");
-                    setDiscountDate(undefined);
-                  }}>
-                    <SelectTrigger id="discount_type">
-                      <SelectValue placeholder="할인 타입 선택" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      <SelectItem value="earlybird">얼리버드</SelectItem>
-                      <SelectItem value="sex">성별 할인</SelectItem>
-                    </SelectContent>
-                  </Select>
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {endDate ? format(endDate, "yyyy-MM-dd") : "날짜를 선택하세요"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={(date) => {
+                  setEndDate(date);
+                  setIsEndDateOpen(false);
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
-                  {/* 할인 조건 */}
-                  {discountType && renderDiscountConditions()}
+        {/* 종료일 다음에 추가 */}
+        {/* Subtext for date */}
+        <div className="space-y-4">
+          {/* <Label className="text-sm">Subtext for date</Label> */}
+          
+          {/* 저장된 subtext 표시 */}
+          {savedDateSubtexts.length > 0 && (
+            <div className="space-y-2">
+              {savedDateSubtexts.map((subtext, index) => (
+                <div 
+                  key={index} 
+                  className="relative rounded-lg border p-3 bg-muted"
+                >
+                  <div className="pr-16 text-sm break-words">
+                    {subtext.content}
+                  </div>
 
-                  {/* 할인 금액 입력 및 버튼 */}
-                  <div className="flex gap-2">
-                    <Input 
-                      id="discount_amount" 
-                      placeholder="할인 금액을 입력하세요" 
-                      value={discountAmount}
-                      onChange={(e) => setDiscountAmount(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleAddDiscount();
-                        }
-                      }}
-                    />
+                  {/* 수정/삭제 버튼 */}
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
                     <Button
                       type="button"
-                      onClick={handleAddDiscount}
-                      className="shrink-0"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEditDateSubtext(index)}
                     >
-                      {editingIndex !== null ? "수정" : "입력"}
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-destructive"
+                      onClick={() => handleDeleteDateSubtext(index)}
+                    >
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              </div>
-
-              {/* Subtext for discount */}
-              <div className="space-y-4">
-                {/* <Label className="text-sm">Subtext for discount</Label> */}
-                
-                {/* 저장된 subtext 표시 */}
-                {savedDiscountSubtexts.length > 0 && (
-                  <div className="space-y-2">
-                    {savedDiscountSubtexts.map((subtext, index) => (
-                      <div 
-                        key={index} 
-                        className="relative rounded-lg border p-3 bg-muted"
-                      >
-                        <div className="pr-16 text-sm break-words">
-                          {subtext.content}
-                        </div>
-
-                        {/* 수정/삭제 버튼 */}
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleEditDiscountSubtext(index)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-destructive"
-                            onClick={() => handleDeleteDiscountSubtext(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 입력 영역 */}
-                <div className="flex gap-2">
-                  <Input 
-                    id="discount_subtext_content" 
-                    placeholder="할인 관련 추가 설명을 입력하세요" 
-                    value={discountSubtextContent}
-                    onChange={(e) => setDiscountSubtextContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleAddDiscountSubtext();
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleAddDiscountSubtext}
-                    className="shrink-0"
-                  >
-                    {editingDiscountSubtextIndex !== null ? "수정" : "입력"}
-                  </Button>
-                </div>
-              </div>
+              ))}
             </div>
+          )}
 
-            {/* 계좌 */}
-            <div className="space-y-4">
-              <Label className="text-sm">Account</Label>
-              <div className="flex flex-col space-y-1.5">
-                <Select value={bank} onValueChange={setBank}>
-                  <SelectTrigger id="bank">
-                    <SelectValue placeholder="은행을 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="sh">신한</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Input 
-                  id="account" 
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
-                  placeholder="계좌번호를 입력하세요" 
-                />
-                <Input 
-                  id="account_owner" 
-                  value={accountOwner}
-                  onChange={(e) => setAccountOwner(e.target.value)}
-                  placeholder="계좌주를 입력하세요" 
-                />
-              </div>
+          {/* 입력 영역 */}
+          <div className="flex gap-2">
+            <Input 
+              id="date_subtext_content" 
+              placeholder="날짜 관련 추가 설명을 입력하세요" 
+              value={dateSubtextContent}
+              onChange={(e) => setDateSubtextContent(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleAddDateSubtext();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              onClick={handleAddDateSubtext}
+              className="shrink-0"
+            >
+              {editingDateSubtextIndex !== null ? "수정" : "입력"}
+            </Button>
+          </div>
+        </div>
+
+        {/* 시작 시간 */}
+        <div className="grid gap-2">
+          <Label className="text-sm">시작 시간</Label>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Select value={startHour} onValueChange={setStartHour}>
+                <SelectTrigger>
+                  <SelectValue placeholder="시" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {hourOptions.map((hour) => (
+                    <SelectItem key={hour} value={hour}>
+                      {hour}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-
-            {/* 기타 정보 섹션 */}
-            <div className="space-y-4">
-              <div className="text-base font-medium">Additional Info</div>
-              
-              {/* 문의 */}
-              <div className="space-y-4">
-                <Label className="text-sm">Contact</Label>
-                
-                {/* 저장된 연락처 정보 표시 */}
-                {savedContacts.length > 0 && (
-                  <div className="space-y-2">
-                    {savedContacts.map((contact, index) => (
-                      <div 
-                        key={index} 
-                        className="relative rounded-lg border p-3 bg-muted"
-                      >
-                        <div className="pr-16 text-sm break-words">
-                          <div>타입: {contact.type}</div>
-                          <div>연락처: {contact.address}</div>
-                          {contact.name && <div>이름: {contact.name}</div>}
-                        </div>
-
-                        {/* 수정/삭제 버튼 */}
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleEditContact(index)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-destructive"
-                            onClick={() => handleDeleteContact(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 입력 영역 */}
-                <div className="space-y-2">
-                  <Select value={contactType} onValueChange={setContactType}>
-                    <SelectTrigger id="contact_type">
-                      <SelectValue placeholder="타입을 선택하세요" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      <SelectItem value="phone">전화번호</SelectItem>
-                      <SelectItem value="kakaotalk">카카오톡</SelectItem>
-                      <SelectItem value="instagram">인스타그램</SelectItem>
-                      <SelectItem value="cafe">카페</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  {(contactType === "phone" || contactType === "kakaotalk") ? (
-                    // phone 또는 kakaotalk인 경우
-                    <div className="flex-1 flex flex-col gap-2">
-                      <Input 
-                        id="contact_address" 
-                        placeholder="연락처를 입력하세요" 
-                        value={contactAddress}
-                        onChange={(e) => setContactAddress(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleAddContact();
-                          }
-                        }}
-                      />
-                      <div className="flex gap-2">
-                        <Input 
-                          id="contact_name" 
-                          placeholder="이름을 입력하세요" 
-                          value={contactName}
-                          onChange={(e) => setContactName(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                              e.preventDefault();
-                              handleAddContact();
-                            }
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          onClick={handleAddContact}
-                          className="shrink-0"
-                        >
-                          {editingContactIndex !== null ? "수정" : "입력"}
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    // 그 외의 경우
-                    <div className="flex gap-2">
-                      <Input 
-                        id="contact_address" 
-                        placeholder="연락처를 입력하세요" 
-                        value={contactAddress}
-                        onChange={(e) => setContactAddress(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleAddContact();
-                          }
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        onClick={handleAddContact}
-                        className="shrink-0"
-                      >
-                        {editingContactIndex !== null ? "수정" : "입력"}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* 공지사항 */}
-              <div className="space-y-4">
-                <Label className="text-sm">Notice</Label>
-                
-                {/* 저장된 공지사항 표시 */}
-                {savedNotices.length > 0 && (
-                  <div className="space-y-2">
-                    {savedNotices.map((notice, index) => (
-                      <div 
-                        key={index} 
-                        className="relative rounded-lg border p-3 bg-muted"
-                      >
-                        <div className="pr-16 text-sm break-words">
-                          {notice.content}
-                        </div>
-
-                        {/* 수정/삭제 버튼 */}
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleEditNotice(index)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-destructive"
-                            onClick={() => handleDeleteNotice(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 입력 영역 */}
-                <div className="flex gap-2">
-                  <Input 
-                    id="notice_content" 
-                    placeholder="공지사항을 입력하세요" 
-                    value={noticeContent}
-                    onChange={(e) => setNoticeContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleAddNotice();
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleAddNotice}
-                    className="shrink-0"
-                  >
-                    {editingNoticeIndex !== null ? "수정" : "입력"}
-                  </Button>
-                </div>
-              </div>
-
-              {/* 조건 */}
-              <div className="space-y-4">
-                <Label className="text-sm">Condition</Label>
-                
-                {/* 저장된 조건 표시 */}
-                {savedConditions.length > 0 && (
-                  <div className="space-y-2">
-                    {savedConditions.map((condition, index) => (
-                      <div 
-                        key={index} 
-                        className="relative rounded-lg border p-3 bg-muted"
-                      >
-                        <div className="pr-16 text-sm break-words">
-                          {condition.content}
-                        </div>
-
-                        {/* 수정/삭제 버튼 */}
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0"
-                            onClick={() => handleEditCondition(index)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 text-destructive"
-                            onClick={() => handleDeleteCondition(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 입력 영역 */}
-                <div className="flex gap-2">
-                  <Input 
-                    id="condition_content" 
-                    placeholder="조건을 입력하세요" 
-                    value={conditionContent}
-                    onChange={(e) => setConditionContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleAddCondition();
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleAddCondition}
-                    className="shrink-0"
-                  >
-                    {editingConditionIndex !== null ? "수정" : "입력"}
-                  </Button>
-                </div>
-              </div>
+            <div className="flex-1">
+              <Select value={startMinute} onValueChange={setStartMinute}>
+                <SelectTrigger>
+                  <SelectValue placeholder="분" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {minuteOptions.map((minute) => (
+                    <SelectItem key={minute} value={minute}>
+                      {minute}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Button variant="outline">Cancel</Button>
-        <Button onClick={handleSubmit} disabled={isLoading}>Deploy</Button>
-      </CardFooter>
-    </Card>
+        </div>
+
+        {/* 종료 시간 */}
+        <div className="grid gap-2">
+          <Label className="text-sm">종료 시간</Label>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <Select value={endHour} onValueChange={setEndHour}>
+                <SelectTrigger>
+                  <SelectValue placeholder="시" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {hourOptions.map((hour) => (
+                    <SelectItem key={hour} value={hour}>
+                      {hour}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex-1">
+              <Select value={endMinute} onValueChange={setEndMinute}>
+                <SelectTrigger>
+                  <SelectValue placeholder="분" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {minuteOptions.map((minute) => (
+                    <SelectItem key={minute} value={minute}>
+                      {minute}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 장소 정보 섹션 */}
+      <div className="space-y-4">
+        <div className="text-base font-medium">Location Info</div>
+        
+        {/* 지역 */}
+        <div className="grid gap-2">
+          <Label htmlFor="region" className="text-sm">Region</Label>
+          <Select value={region} onValueChange={setRegion}>
+            <SelectTrigger id="region">
+              <SelectValue placeholder="지역을 선택하세요" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="hd">홍대</SelectItem>
+              <SelectItem value="gn">강남</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* 장소 */}
+        <div className="grid gap-2">
+          <Label htmlFor="place" className="text-sm">Place</Label>
+          <Input id="place" placeholder="장소를 입력하세요" value={place} onChange={(e) => setPlace(e.target.value)} />
+          <Input id="place_url" placeholder="장소 링크를 입력하세요" value={placeUrl} onChange={(e) => setPlaceUrl(e.target.value)} />
+        </div>
+      </div>
+
+      {/* 가격 정보 섹션 */}
+      <div className="space-y-4">
+        <div className="text-base font-medium">Price Info</div>
+        
+        {/* 금액 */}
+        <div className="grid gap-2">
+          <Label htmlFor="price" className="text-sm">Price</Label>
+          <Input id="price" placeholder="금액을 입력하세요" value={price} onChange={(e) => setPrice(e.target.value)} />
+        </div>
+
+        {/* 할인 정보 */}
+        <div className="space-y-4">
+          <Label className="text-sm">Discount</Label>
+          
+          {/* 저장된 할인 정보 표시 */}
+          {savedDiscounts.length > 0 && (
+            <div className="space-y-2">
+              {savedDiscounts.map((discount, index) => (
+                <div 
+                  key={index} 
+                  className="group relative rounded-lg border p-3 bg-muted"
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('text/plain', index.toString());
+                    e.currentTarget.classList.add('dragging', 'opacity-50');
+                  }}
+                  onDragEnd={(e) => {
+                    e.currentTarget.classList.remove('dragging', 'opacity-50');
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    const draggingElement = document.querySelector('.dragging');
+                    const currentElement = e.currentTarget;
+                    if (!draggingElement || draggingElement === currentElement) return;
+                    
+                    const container = currentElement.parentElement;
+                    if (!container) return;
+                    
+                    const children = [...container.children];
+                    const currentIndex = children.indexOf(currentElement);
+                    const draggingIndex = children.indexOf(draggingElement);
+                    
+                    if (currentIndex > draggingIndex) {
+                      currentElement.after(draggingElement);
+                    } else {
+                      currentElement.before(draggingElement);
+                    }
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                    const toIndex = index;
+                    if (fromIndex === toIndex) return;
+                    
+                    handleReorderDiscount(fromIndex, toIndex);
+                  }}
+                >
+                  {/* 드래그 핸들 */}
+                  <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move">
+                    <GripVertical className="h-4 w-4" />
+                  </div>
+
+                  {/* 할인 정보 내용 */}
+                  <div className="ml-6 flex flex-col space-y-1 text-sm">
+                    <div>
+                      <span>
+                        타입: {discount.type === "earlybird" ? "얼리버드" : "성별"}
+                      </span>
+                    </div>
+                    <div>
+                      {discount.type === "earlybird" ? (
+                        <span>
+                          마감일: {discount.date && format(new Date(discount.date), "yyyy-MM-dd")}
+                        </span>
+                      ) : (
+                        <span>대상: {discount.condition === "male" ? "남성" : "여성"}</span>
+                      )}
+                    </div>
+                    <div>
+                      할인금액: {discount.amount}원
+                    </div>
+                  </div>
+
+                  {/* 수정/삭제 버튼 */}
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEditDiscount(index)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-destructive"
+                      onClick={() => handleDeleteDiscount(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {/* 입력 영역 */}
+          <div className="space-y-2">
+            <Select value={discountType} onValueChange={(value) => {
+              setDiscountType(value);
+              setDiscountCondition("");
+              setDiscountDate(undefined);
+            }}>
+              <SelectTrigger id="discount_type">
+                <SelectValue placeholder="할인 타입 선택" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="earlybird">얼리버드</SelectItem>
+                <SelectItem value="sex">성별 할인</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* 할인 조건 */}
+            {discountType && renderDiscountConditions()}
+
+            {/* 할인 금액 입력 및 버튼 */}
+            <div className="flex gap-2">
+              <Input 
+                id="discount_amount" 
+                placeholder="할인 금액을 입력하세요" 
+                value={discountAmount}
+                onChange={(e) => setDiscountAmount(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleAddDiscount();
+                  }
+                }}
+              />
+              <Button
+                type="button"
+                onClick={handleAddDiscount}
+                className="shrink-0"
+              >
+                {editingIndex !== null ? "수정" : "입력"}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Subtext for discount */}
+        <div className="space-y-4">
+          {/* <Label className="text-sm">Subtext for discount</Label> */}
+          
+          {/* 저장된 subtext 표시 */}
+          {savedDiscountSubtexts.length > 0 && (
+            <div className="space-y-2">
+              {savedDiscountSubtexts.map((subtext, index) => (
+                <div 
+                  key={index} 
+                  className="relative rounded-lg border p-3 bg-muted"
+                >
+                  <div className="pr-16 text-sm break-words">
+                    {subtext.content}
+                  </div>
+
+                  {/* 수정/삭제 버튼 */}
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEditDiscountSubtext(index)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-destructive"
+                      onClick={() => handleDeleteDiscountSubtext(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 입력 영역 */}
+          <div className="flex gap-2">
+            <Input 
+              id="discount_subtext_content" 
+              placeholder="할인 관련 추가 설명을 입력하세요" 
+              value={discountSubtextContent}
+              onChange={(e) => setDiscountSubtextContent(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleAddDiscountSubtext();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              onClick={handleAddDiscountSubtext}
+              className="shrink-0"
+            >
+              {editingDiscountSubtextIndex !== null ? "수정" : "입력"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 계좌 */}
+      <div className="space-y-4">
+        <Label className="text-sm">Account</Label>
+        <div className="flex flex-col space-y-1.5">
+          <Select value={bank} onValueChange={setBank}>
+            <SelectTrigger id="bank">
+              <SelectValue placeholder="은행을 선택하세요" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="sh">신한</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input 
+            id="account" 
+            value={accountNumber}
+            onChange={(e) => setAccountNumber(e.target.value)}
+            placeholder="계좌번호를 입력하세요" 
+          />
+          <Input 
+            id="account_owner" 
+            value={accountOwner}
+            onChange={(e) => setAccountOwner(e.target.value)}
+            placeholder="계좌주를 입력하세요" 
+          />
+        </div>
+      </div>
+
+      {/* 기타 정보 섹션 */}
+      <div className="space-y-4">
+        <div className="text-base font-medium">Additional Info</div>
+        
+        {/* 문의 */}
+        <div className="space-y-4">
+          <Label className="text-sm">Contact</Label>
+          
+          {/* 저장된 연락처 정보 표시 */}
+          {savedContacts.length > 0 && (
+            <div className="space-y-2">
+              {savedContacts.map((contact, index) => (
+                <div 
+                  key={index} 
+                  className="relative rounded-lg border p-3 bg-muted"
+                >
+                  <div className="pr-16 text-sm break-words">
+                    <div>타입: {contact.type}</div>
+                    <div>연락처: {contact.address}</div>
+                    {contact.name && <div>이름: {contact.name}</div>}
+                  </div>
+
+                  {/* 수정/삭제 버튼 */}
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEditContact(index)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-destructive"
+                      onClick={() => handleDeleteContact(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 입력 영역 */}
+          <div className="space-y-2">
+            <Select value={contactType} onValueChange={setContactType}>
+              <SelectTrigger id="contact_type">
+                <SelectValue placeholder="타입을 선택하세요" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectItem value="phone">전화번호</SelectItem>
+                <SelectItem value="kakaotalk">카카오톡</SelectItem>
+                <SelectItem value="instagram">인스타그램</SelectItem>
+                <SelectItem value="cafe">카페</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {(contactType === "phone" || contactType === "kakaotalk") ? (
+              // phone 또는 kakaotalk인 경우
+              <div className="flex-1 flex flex-col gap-2">
+                <Input 
+                  id="contact_address" 
+                  placeholder="연락처를 입력하세요" 
+                  value={contactAddress}
+                  onChange={(e) => setContactAddress(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAddContact();
+                    }
+                  }}
+                />
+                <div className="flex gap-2">
+                  <Input 
+                    id="contact_name" 
+                    placeholder="이름을 입력하세요" 
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAddContact();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddContact}
+                    className="shrink-0"
+                  >
+                    {editingContactIndex !== null ? "수정" : "입력"}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              // 그 외의 경우
+              <div className="flex gap-2">
+                <Input 
+                  id="contact_address" 
+                  placeholder="연락처를 입력하세요" 
+                  value={contactAddress}
+                  onChange={(e) => setContactAddress(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAddContact();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  onClick={handleAddContact}
+                  className="shrink-0"
+                >
+                  {editingContactIndex !== null ? "수정" : "입력"}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 공지사항 */}
+        <div className="space-y-4">
+          <Label className="text-sm">Notice</Label>
+          
+          {/* 저장된 공지사항 표시 */}
+          {savedNotices.length > 0 && (
+            <div className="space-y-2">
+              {savedNotices.map((notice, index) => (
+                <div 
+                  key={index} 
+                  className="relative rounded-lg border p-3 bg-muted"
+                >
+                  <div className="pr-16 text-sm break-words">
+                    {notice.content}
+                  </div>
+
+                  {/* 수정/삭제 버튼 */}
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEditNotice(index)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-destructive"
+                      onClick={() => handleDeleteNotice(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 입력 영역 */}
+          <div className="flex gap-2">
+            <Input 
+              id="notice_content" 
+              placeholder="공지사항을 입력하세요" 
+              value={noticeContent}
+              onChange={(e) => setNoticeContent(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleAddNotice();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              onClick={handleAddNotice}
+              className="shrink-0"
+            >
+              {editingNoticeIndex !== null ? "수정" : "입력"}
+            </Button>
+          </div>
+        </div>
+
+        {/* 조건 */}
+        <div className="space-y-4">
+          <Label className="text-sm">Condition</Label>
+          
+          {/* 저장된 조건 표시 */}
+          {savedConditions.length > 0 && (
+            <div className="space-y-2">
+              {savedConditions.map((condition, index) => (
+                <div 
+                  key={index} 
+                  className="relative rounded-lg border p-3 bg-muted"
+                >
+                  <div className="pr-16 text-sm break-words">
+                    {condition.content}
+                  </div>
+
+                  {/* 수정/삭제 버튼 */}
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => handleEditCondition(index)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-destructive"
+                      onClick={() => handleDeleteCondition(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 입력 영역 */}
+          <div className="flex gap-2">
+            <Input 
+              id="condition_content" 
+              placeholder="조건을 입력하세요" 
+              value={conditionContent}
+              onChange={(e) => setConditionContent(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleAddCondition();
+                }
+              }}
+            />
+            <Button
+              type="button"
+              onClick={handleAddCondition}
+              className="shrink-0"
+            >
+              {editingConditionIndex !== null ? "수정" : "입력"}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* 버튼 영역 */}
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" type="button" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? "Saving..." : "Save"}
+        </Button>
+      </div>
+    </form>
   )
 }
