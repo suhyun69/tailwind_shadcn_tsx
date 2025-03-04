@@ -4,7 +4,7 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
-import { Plus, MoreHorizontal, Pencil, Trash } from "lucide-react"
+import { Plus, MoreHorizontal, Pencil, Trash, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -42,11 +42,20 @@ type LessonData = {
   created_at: string
 }
 
+type SortConfig = {
+  column: keyof LessonData | null
+  direction: 'asc' | 'desc'
+}
+
 export function LessonList() {
   const router = useRouter()
   const [lessons, setLessons] = React.useState<LessonData[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [selectedLessons, setSelectedLessons] = React.useState<string[]>([])
+  const [sortConfig, setSortConfig] = React.useState<SortConfig>({
+    column: 'created_at',
+    direction: 'desc'
+  })
 
   const fetchLessons = async () => {
     try {
@@ -54,7 +63,9 @@ export function LessonList() {
       const { data, error } = await supabase
         .from('lessons')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order(sortConfig.column || 'created_at', { 
+          ascending: sortConfig.direction === 'asc' 
+        })
 
       if (error) throw error
       setLessons(data || [])
@@ -68,7 +79,7 @@ export function LessonList() {
 
   React.useEffect(() => {
     fetchLessons()
-  }, [])
+  }, [sortConfig])
 
   const handleLessonClick = (lesson: LessonData) => {
     router.push(`/lessons/${lesson.lesson_no}`)
@@ -88,6 +99,46 @@ export function LessonList() {
     } else {
       setSelectedLessons(selectedLessons.filter(id => id !== lessonId))
     }
+  }
+
+  const handleSort = (column: keyof LessonData) => {
+    setSortConfig(current => ({
+      column,
+      direction: current.column === column && current.direction === 'asc' 
+        ? 'desc' 
+        : 'asc'
+    }))
+  }
+
+  const SortableHeader = ({ 
+    column, 
+    children 
+  }: { 
+    column: keyof LessonData
+    children: React.ReactNode 
+  }) => {
+    const isActive = sortConfig.column === column
+    
+    return (
+      <TableHead>
+        <Button
+          variant="ghost"
+          onClick={() => handleSort(column)}
+          className="flex items-center gap-1 p-0 h-auto font-medium"
+        >
+          {children}
+          {isActive ? (
+            sortConfig.direction === 'asc' ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )
+          ) : (
+            <ArrowUpDown className="h-4 w-4 opacity-50" />
+          )}
+        </Button>
+      </TableHead>
+    )
   }
 
   return (
@@ -127,13 +178,13 @@ export function LessonList() {
                       aria-label="Select all"
                     />
                   </TableHead>
-                  <TableHead className="w-[100px]">No.</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Genre</TableHead>
-                  <TableHead>Instructors</TableHead>
-                  <TableHead>Region</TableHead>
-                  <TableHead className="w-[100px]">Status</TableHead>
-                  <TableHead className="w-[150px]">Created At</TableHead>
+                  <SortableHeader column="lesson_no">No.</SortableHeader>
+                  <SortableHeader column="title">Title</SortableHeader>
+                  <SortableHeader column="genre">Genre</SortableHeader>
+                  <SortableHeader column="instructor1">Instructors</SortableHeader>
+                  <SortableHeader column="region">Region</SortableHeader>
+                  <SortableHeader column="status">Status</SortableHeader>
+                  <SortableHeader column="created_at">Created At</SortableHeader>
                   <TableHead className="w-[70px]"></TableHead>
                 </TableRow>
               </TableHeader>
