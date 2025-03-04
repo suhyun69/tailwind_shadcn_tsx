@@ -201,7 +201,7 @@ export function LessonList() {
                     <TableCell className="font-medium">#{lesson.lesson_no}</TableCell>
                     <TableCell 
                       className="cursor-pointer hover:underline"
-                      onClick={() => handleLessonClick(lesson)}
+                      // onClick={() => handleLessonClick(lesson)}
                     >
                       {lesson.title}
                     </TableCell>
@@ -231,7 +231,7 @@ export function LessonList() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
-                            onClick={() => router.push(`/lessons/${lesson.lesson_no}`)}
+                            onClick={() => router.push(`/lesson/form/${lesson.lesson_no}`)}
                           >
                             <Pencil className="mr-2 h-4 w-4" />
                             Edit

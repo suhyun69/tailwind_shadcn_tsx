@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import * as React from "react"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -67,15 +68,32 @@ type DateSubtextInfo = {
 }
 
 type LessonData = {
-  lesson_id?: string;
-  title: string;
-  genre: string;
-  instructor1?: string;
-  instructor2?: string;
-  bank?: string;
-  account_number?: string;
-  account_owner?: string;
-  // ... other fields
+  lesson_id?: string
+  lesson_no?: number
+  title: string
+  genre: string
+  instructor1?: string
+  instructor2?: string
+  region?: string
+  place?: string
+  place_url?: string
+  price?: string
+  bank?: string
+  account_number?: string
+  account_owner?: string
+  start_date?: Date | string
+  end_date?: Date | string
+  startHour?: string
+  startMinute?: string
+  endHour?: string
+  endMinute?: string
+  discounts?: any[]
+  contacts?: any[]
+  notices?: any[]
+  conditions?: any[]
+  date_subtexts?: any[]
+  discount_subtexts?: any[]
+  status?: 'draft' | 'published'
 }
 
 type LessonFormProps = {
@@ -85,29 +103,81 @@ type LessonFormProps = {
 }
 
 export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
-  const [startDate, setStartDate] = React.useState<Date>()
-  const [endDate, setEndDate] = React.useState<Date>()
-  const [startHour, setStartHour] = React.useState("")
-  const [startMinute, setStartMinute] = React.useState("")
-  const [endHour, setEndHour] = React.useState("")
-  const [endMinute, setEndMinute] = React.useState("")
+  // 모든 상태를 lesson prop으로 초기화
+  const [startDate, setStartDate] = React.useState<Date | undefined>(
+    lesson?.start_date ? new Date(lesson.start_date) : undefined
+  )
+  const [endDate, setEndDate] = React.useState<Date | undefined>(
+    lesson?.end_date ? new Date(lesson.end_date) : undefined
+  )
+  const [startHour, setStartHour] = React.useState(lesson?.startHour || "")
+  const [startMinute, setStartMinute] = React.useState(lesson?.startMinute || "")
+  const [endHour, setEndHour] = React.useState(lesson?.endHour || "")
+  const [endMinute, setEndMinute] = React.useState(lesson?.endMinute || "")
+  const [title, setTitle] = React.useState(lesson?.title || "")
+  const [genre, setGenre] = React.useState(lesson?.genre || "")
+  const [instructor1, setInstructor1] = React.useState(lesson?.instructor1 || "")
+  const [instructor2, setInstructor2] = React.useState(lesson?.instructor2 || "")
+  const [region, setRegion] = React.useState(lesson?.region || "")
+  const [place, setPlace] = React.useState(lesson?.place || "")
+  const [placeUrl, setPlaceUrl] = React.useState(lesson?.place_url || "")
+  const [price, setPrice] = React.useState(lesson?.price || "")
+  const [bank, setBank] = useState(lesson?.bank || "")
+  const [accountNumber, setAccountNumber] = useState(lesson?.account_number || "")
+  const [accountOwner, setAccountOwner] = useState(lesson?.account_owner || "")
+  
+  // 배열 데이터 초기화
+  const [savedDiscounts, setSavedDiscounts] = React.useState(lesson?.discounts || [])
+  const [savedContacts, setSavedContacts] = React.useState(lesson?.contacts || [])
+  const [savedNotices, setSavedNotices] = React.useState(lesson?.notices || [])
+  const [savedConditions, setSavedConditions] = React.useState(lesson?.conditions || [])
+  const [savedDateSubtexts, setSavedDateSubtexts] = React.useState(lesson?.date_subtexts || [])
+  const [savedDiscountSubtexts, setSavedDiscountSubtexts] = React.useState(lesson?.discount_subtexts || [])
+
+  // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
+  React.useEffect(() => {
+    if (lesson) {
+      setTitle(lesson.title || "")
+      setGenre(lesson.genre || "")
+      setInstructor1(lesson.instructor1 || "")
+      setInstructor2(lesson.instructor2 || "")
+      setRegion(lesson.region || "")
+      setPlace(lesson.place || "")
+      setPlaceUrl(lesson.place_url || "")
+      setPrice(lesson.price || "")
+      setBank(lesson.bank || "")
+      setAccountNumber(lesson.account_number || "")
+      setAccountOwner(lesson.account_owner || "")
+      setStartDate(lesson.start_date ? new Date(lesson.start_date) : undefined)
+      setEndDate(lesson.end_date ? new Date(lesson.end_date) : undefined)
+      setStartHour(lesson.startHour || "")
+      setStartMinute(lesson.startMinute || "")
+      setEndHour(lesson.endHour || "")
+      setEndMinute(lesson.endMinute || "")
+      setSavedDiscounts(lesson.discounts || [])
+      setSavedContacts(lesson.contacts || [])
+      setSavedNotices(lesson.notices || [])
+      setSavedConditions(lesson.conditions || [])
+      setSavedDateSubtexts(lesson.date_subtexts || [])
+      setSavedDiscountSubtexts(lesson.discount_subtexts || [])
+    }
+  }, [lesson])
+
   const [discountType, setDiscountType] = React.useState("")
   const [discountCondition, setDiscountCondition] = React.useState("")
   const [discountAmount, setDiscountAmount] = React.useState("")
   const [discountDate, setDiscountDate] = React.useState<Date>()
-  const [savedDiscounts, setSavedDiscounts] = React.useState<DiscountInfo[]>([])
   const [editingIndex, setEditingIndex] = React.useState<number | null>(null)
   const [contactType, setContactType] = React.useState("")
   const [contactAddress, setContactAddress] = React.useState("")
   const [contactName, setContactName] = React.useState("")
-  const [savedContacts, setSavedContacts] = React.useState<ContactInfo[]>([])
   const [editingContactIndex, setEditingContactIndex] = React.useState<number | null>(null)
   const [noticeContent, setNoticeContent] = React.useState("")
-  const [savedNotices, setSavedNotices] = React.useState<NoticeInfo[]>([])
   const [editingNoticeIndex, setEditingNoticeIndex] = React.useState<number | null>(null)
   const [conditionContent, setConditionContent] = React.useState("")
-  const [savedConditions, setSavedConditions] = React.useState<ConditionInfo[]>([])
   const [editingConditionIndex, setEditingConditionIndex] = React.useState<number | null>(null)
   const [isStartDateOpen, setIsStartDateOpen] = React.useState(false)
   const [isEndDateOpen, setIsEndDateOpen] = React.useState(false)
@@ -115,22 +185,8 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [savedSubtexts, setSavedSubtexts] = React.useState<SubtextInfo[]>([])
   const [editingSubtextIndex, setEditingSubtextIndex] = React.useState<number | null>(null)
   const [discountSubtextContent, setDiscountSubtextContent] = React.useState("")
-  const [savedDiscountSubtexts, setSavedDiscountSubtexts] = React.useState<SubtextForDiscountInfo[]>([])
   const [editingDiscountSubtextIndex, setEditingDiscountSubtextIndex] = React.useState<number | null>(null)
-  const [title, setTitle] = React.useState("")
-  const [genre, setGenre] = React.useState("")
-  const [instructor1, setInstructor1] = React.useState("")
-  const [instructor2, setInstructor2] = React.useState("")
-  const [region, setRegion] = React.useState("")
-  const [place, setPlace] = React.useState("")
-  const [placeUrl, setPlaceUrl] = React.useState("")
-  const [price, setPrice] = React.useState("")
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [bank, setBank] = useState(lesson?.bank || '')
-  const [accountNumber, setAccountNumber] = useState(lesson?.account_number || '')
-  const [accountOwner, setAccountOwner] = useState(lesson?.account_owner || '')
   const [dateSubtextContent, setDateSubtextContent] = React.useState("")
-  const [savedDateSubtexts, setSavedDateSubtexts] = React.useState<DateSubtextInfo[]>([])
   const [editingDateSubtextIndex, setEditingDateSubtextIndex] = React.useState<number | null>(null)
   
   // 시간 옵션 (0-23)
@@ -436,18 +492,9 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted!');
-    
     try {
-      if (!title || !genre) {
-        toast.error("제목과 장르는 필수 입력사항입니다.");
-        return;
-      }
-
       setIsLoading(true);
-
       const lessonData = {
-        lesson_id: lesson?.lesson_id || crypto.randomUUID(),
         title,
         genre,
         instructor1,
@@ -456,39 +503,26 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
         place,
         place_url: placeUrl,
         price,
-        start_date: startDate,
-        end_date: endDate,
-        start_time: startHour && startMinute ? `${startHour}:${startMinute}` : null,
-        end_time: endHour && endMinute ? `${endHour}:${endMinute}` : null,
-        discounts: savedDiscounts || [],
-        contacts: savedContacts || [],
-        notices: savedNotices || [],
-        conditions: savedConditions || [],
-        date_subtexts: savedDateSubtexts || [],
-        discount_subtexts: savedDiscountSubtexts || [],
         bank,
         account_number: accountNumber,
         account_owner: accountOwner,
-        status: 'draft',
-        created_at: new Date().toISOString()
+        start_date: startDate?.toISOString(),
+        end_date: endDate?.toISOString(),
+        startHour,
+        startMinute,
+        endHour,
+        endMinute,
+        discounts: savedDiscounts,
+        contacts: savedContacts,
+        notices: savedNotices,
+        conditions: savedConditions,
+        date_subtexts: savedDateSubtexts,
+        discount_subtexts: savedDiscountSubtexts
       };
-
-      console.log('Saving lesson data:', lessonData);
-
-      const { data, error } = await supabase
-        .from('lessons')
-        .upsert(lessonData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      console.log('Saved lesson:', data);
-      toast.success("수업이 저장되었습니다.");
-      onSaved(data);
-      
+      await onSaved(lessonData);
+      router.push('/');
     } catch (error) {
-      console.error('Error saving lesson:', error);
+      console.error('Error:', error);
       toast.error("저장에 실패했습니다.");
     } finally {
       setIsLoading(false);
@@ -1289,7 +1323,13 @@ export function LessonForm({ lesson, onSaved, onCancel }: LessonFormProps) {
 
       {/* 버튼 영역 */}
       <div className="flex justify-end gap-2">
-        <Button variant="outline" type="button" onClick={onCancel}>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={() => {
+            router.push('/');  // 취소 시 루트로 이동
+          }}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={isLoading}>
