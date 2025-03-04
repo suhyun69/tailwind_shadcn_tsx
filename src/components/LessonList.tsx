@@ -82,7 +82,7 @@ export function LessonList() {
   }, [sortConfig])
 
   const handleLessonClick = (lesson: LessonData) => {
-    router.push(`/lessons/${lesson.lesson_no}`)
+    router.push(`/lesson/${lesson.lesson_no}`)
   }
 
   const toggleAll = (checked: boolean) => {
@@ -201,7 +201,7 @@ export function LessonList() {
                     <TableCell className="font-medium">#{lesson.lesson_no}</TableCell>
                     <TableCell 
                       className="cursor-pointer hover:underline"
-                      // onClick={() => handleLessonClick(lesson)}
+                      onClick={() => handleLessonClick(lesson)}
                     >
                       {lesson.title}
                     </TableCell>
