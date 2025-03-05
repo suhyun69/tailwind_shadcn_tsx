@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
 import { toast } from "sonner"
+import { v4 as uuidv4 } from 'uuid'
 
 type LessonData = {
   lesson_id: string
@@ -64,6 +65,27 @@ export default function LessonViewPage() {
     fetchLesson()
   }, [params.lesson_no])
 
+  const handleCheckout = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('checkout')
+        .insert({
+          lesson_no: lesson?.lesson_no,
+          discounts: lesson?.discounts || []
+        })
+        .select('checkout_id')
+        .single()
+
+      if (error) throw error
+
+      toast.success("결제 페이지로 이동합니다.")
+      router.push(`/checkout/${data.checkout_id}`)
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error("결제 페이지 이동에 실패했습니다.")
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
@@ -88,9 +110,14 @@ export default function LessonViewPage() {
           <h1 className="text-2xl font-bold">{lesson.title}</h1>
           <p className="text-muted-foreground">#{lesson.lesson_no}</p>
         </div>
-        <Button onClick={() => router.push(`/lesson/form/${lesson.lesson_no}`)}>
-          수정하기
-        </Button>
+        <div className="space-x-2">
+          <Button onClick={() => router.push(`/lesson/form/${lesson.lesson_no}`)}>
+            수정하기
+          </Button>
+          <Button onClick={handleCheckout}>
+            신청하기
+          </Button>
+        </div>
       </div>
 
       {/* 기본 정보 */}
