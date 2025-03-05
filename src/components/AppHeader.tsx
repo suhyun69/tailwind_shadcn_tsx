@@ -1,11 +1,19 @@
 "use client"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bell, User } from "lucide-react"
+import { Bell, User, LogOut, Plus } from "lucide-react"
 import { useProfile } from "@/hooks/useProfile"
+import { useRouter } from "next/navigation"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function AppHeader() {
   const { profile, setProfile } = useProfile()
+  const router = useRouter()
 
   const handleLogin = () => {
     setProfile({
@@ -30,12 +38,26 @@ export function AppHeader() {
         {profile ? (
           <div className="flex items-center gap-3">
             <Bell className="h-6 w-6 text-muted-foreground" />
-            <Avatar>
-              <AvatarImage src={profile.avatar_url || ""} alt={profile.nickname} />
-              <AvatarFallback>
-                <User className="h-5 w-5" />
-              </AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Avatar className="cursor-pointer">
+                  <AvatarImage src={profile?.avatar_url || ""} alt={profile?.nickname} />
+                  <AvatarFallback>
+                    <User className="h-5 w-5" />
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => router.push('/lesson/form')}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  <span>수업 생성</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setProfile(null)}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>로그아웃</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         ) : (
           <div onClick={handleLogin}>
