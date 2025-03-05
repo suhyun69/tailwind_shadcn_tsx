@@ -9,6 +9,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu"
 
 export function AppHeader() {
@@ -48,10 +50,13 @@ export function AppHeader() {
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push('/lesson/form')}>
                   <Plus className="mr-2 h-4 w-4" />
                   <span>수업 생성</span>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setProfile(null)}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>로그아웃</span>
