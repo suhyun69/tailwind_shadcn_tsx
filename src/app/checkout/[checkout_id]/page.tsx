@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -21,6 +21,7 @@ type CheckoutData = {
 
 export default function CheckoutPage() {
   const params = useParams()
+  const router = useRouter()
   const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -77,7 +78,12 @@ export default function CheckoutPage() {
                 </li>
               ))}
             </ul>
-            <Button className="mt-6 w-full">할인 적용하기</Button>
+            <Button 
+              className="mt-6 w-full"
+              onClick={() => router.push('/checkout/complete')}
+            >
+              결제하기
+            </Button>
           </CardContent>
         </Card>
       </div>
