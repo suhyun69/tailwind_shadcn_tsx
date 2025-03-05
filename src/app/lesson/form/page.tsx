@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { LessonForm } from "@/components/LessonForm"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
+import { LessonForm2 } from "@/components/LessonForm2"
 
 export default function NewLessonPage() {
   const router = useRouter()
@@ -45,10 +46,12 @@ export default function NewLessonPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold">새 수업 추가</h1>
       </div>
+      <LessonForm2/>
       <LessonForm 
         onSaved={handleSaved}
         onCancel={() => router.back()}
       />
+      
     </div>
   )
 } 
