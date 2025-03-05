@@ -15,9 +15,9 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4">
       {/* 헤더 */}
-      <header className="bg-gray-800 text-white p-4 text-center text-lg font-semibold">
+      {/* <header className="bg-gray-800 text-white p-4 text-center text-lg font-semibold">
         반응형 Tailwind 레이아웃
-      </header>
+      </header> */}
 
       {/* 메인 콘텐츠 */}
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-6">
