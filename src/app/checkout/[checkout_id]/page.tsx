@@ -80,7 +80,25 @@ export default function CheckoutPage() {
             </ul>
             <Button 
               className="mt-6 w-full"
-              onClick={() => router.push('/checkout/complete')}
+              onClick={async () => {
+                try {
+                  const { data, error } = await supabase
+                    .from('payments')
+                    .insert({
+                      lesson_no: checkoutData.lesson_no
+                    })
+                    .select('payment_id')
+                    .single()
+
+                  if (error) throw error
+
+                  toast.success("결제가 완료되었습니다.")
+                  router.push('/checkout/complete')
+                } catch (error) {
+                  console.error('Error:', error)
+                  toast.error("결제에 실패했습니다.")
+                }
+              }}
             >
               결제하기
             </Button>
