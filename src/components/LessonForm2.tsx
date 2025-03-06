@@ -31,7 +31,8 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
-import { Calendar as CalendarIcon, Plus, Send } from "lucide-react"
+import { Calendar as CalendarIcon, Check, Plus, Send } from "lucide-react"
+import { Pencil, Trash2, X } from "lucide-react"
 
 type LessonData = {
   no?: number
@@ -69,12 +70,15 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
     lesson?.end_date ? new Date(lesson.end_date) : undefined
   )
   const [isEndDateOpen, setIsEndDateOpen] = React.useState(false)
+  
   const [startTime, setStartTime] = React.useState(lesson?.start_time || "")
   const [endTime, setEndTime] = React.useState(lesson?.end_time || "")
 
   const [dateTimeSubTexts, setdateTimeSubTexts] = React.useState<string[]>([])
   const [dateTimeSubTextInput, setdateTimeSubTextInput] = React.useState("")
   const dateTimeSubTextInputLength = dateTimeSubTextInput.trim().length
+  const [editingDateTimeSubTextsIndex, setEditingDateTimeSubTextsIndex] = useState<number | null>(null)
+  const [editedDateTimeSubText, setEditedDateTimeSubText] = useState("")
 
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
@@ -95,6 +99,24 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setdateTimeSubTexts([...dateTimeSubTexts, dateTimeSubTextInput.trim()])
       setdateTimeSubTextInput("")  // 입력 필드 초기화
     }
+  }
+
+  const handleEditDateTimeSubTexts = (index: number, text: string) => {
+    setEditingDateTimeSubTextsIndex(index)
+    setEditedDateTimeSubText(text)
+  }
+
+  const handleEditSavedDateTimeSubTexts = (index: number) => {
+    if (editedDateTimeSubText.trim()) {
+      const newTexts = [...dateTimeSubTexts]
+      newTexts[index] = editedDateTimeSubText.trim()
+      setdateTimeSubTexts(newTexts)
+    }
+    setEditingDateTimeSubTextsIndex(null)
+  }
+
+  const handleDeleteDateTimeSubText = (index: number) => {
+    setdateTimeSubTexts(dateTimeSubTexts.filter((_, i) => i !== index))
   }
 
   return (
@@ -241,12 +263,49 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                 <div
                   key={index}
                   className={cn(
-                    "flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
-                    // "ml-auto bg-primary text-primary-foreground"
+                    "flex w-max max-w-[75%] items-center gap-2 rounded-lg px-3 py-2 text-sm",
                     "bg-muted"
                   )}
                 >
-                  {text}
+                  {editingDateTimeSubTextsIndex === index ? (
+                    <>
+                      <Input
+                        value={editedDateTimeSubText}
+                        onChange={(e) => setEditedDateTimeSubText(e.target.value)}
+                        className="h-6 w-[200px]"
+                      />
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-6 w-6"
+                        onClick={() => handleEditSavedDateTimeSubTexts(index)}
+                      >
+                        <Check className="h-4 w-4" />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      {text}
+                      <div className="ml-2 flex items-center gap-1">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-6 w-6"
+                          onClick={() => handleEditDateTimeSubTexts(index, text)}
+                        >
+                          <Pencil className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-6 w-6"
+                          onClick={() => handleDeleteDateTimeSubText(index)}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
