@@ -45,6 +45,7 @@ type LessonData = {
   start_time: string
   end_time: string
   date_time_sub_texts?: string[]
+  price: string
 }
 
 type LessonFormProps = {
@@ -75,11 +76,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [startTime, setStartTime] = React.useState(lesson?.start_time || "")
   const [endTime, setEndTime] = React.useState(lesson?.end_time || "")
 
-  const [dateTimeSubTexts, setDateTimeSubTexts] = React.useState<string[]>([])
+  const [dateTimeSubTexts, setDateTimeSubTexts] = React.useState(lesson?.date_time_sub_texts || [])
   const [dateTimeSubTextInput, setDateTimeSubTextInput] = React.useState("")
   const dateTimeSubTextInputLength = dateTimeSubTextInput.trim().length
   const [editingDateTimeSubTextsIndex, setEditingDateTimeSubTextsIndex] = useState<number | null>(null)
   const [editedDateTimeSubText, setEditedDateTimeSubText] = useState("")
+
+  const [price, setPrice] = React.useState(lesson?.price || "")
 
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
@@ -359,7 +362,20 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
             <Input id={`place`} placeholder="장소를 입력하세요." />
             <Input id={`place_url`} placeholder="Url을 입력하세요." />
           </div>
-          
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Price Info</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+            <Label htmlFor={`price`}>Price</Label>
+            <Input id={`price`} placeholder="금액을 입력하세요." />
+            </div>
+          </div>
         </CardContent>
       </Card>
 
