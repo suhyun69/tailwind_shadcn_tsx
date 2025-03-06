@@ -181,13 +181,6 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
     setDiscounts(discounts.filter((_, i) => i !== index))
   }
 
-  const handleReorderDiscounts = (fromIndex: number, toIndex: number) => {
-    const newDiscounts = [...discounts]
-    const [movedItem] = newDiscounts.splice(fromIndex, 1)
-    newDiscounts.splice(toIndex, 0, movedItem)
-    setDiscounts(newDiscounts)
-  }
-
   const renderDiscountConditions = () => {
     if (discountType === "earlybird") {
       return (
@@ -491,50 +484,9 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                   {discounts.map((discount, index) => (
                     <div 
                       key={index} 
-                      className="group relative rounded-lg border p-3 bg-muted"
-                      draggable
-                      onDragStart={(e) => {
-                        e.dataTransfer.setData('text/plain', index.toString());
-                        e.currentTarget.classList.add('dragging', 'opacity-50');
-                      }}
-                      onDragEnd={(e) => {
-                        e.currentTarget.classList.remove('dragging', 'opacity-50');
-                      }}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        const draggingElement = document.querySelector('.dragging');
-                        const currentElement = e.currentTarget;
-                        if (!draggingElement || draggingElement === currentElement) return;
-                        
-                        const container = currentElement.parentElement;
-                        if (!container) return;
-                        
-                        const children = [...container.children];
-                        const currentIndex = children.indexOf(currentElement);
-                        const draggingIndex = children.indexOf(draggingElement);
-                        
-                        if (currentIndex > draggingIndex) {
-                          currentElement.after(draggingElement);
-                        } else {
-                          currentElement.before(draggingElement);
-                        }
-                      }}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
-                        const toIndex = index;
-                        if (fromIndex === toIndex) return;
-                        
-                        handleReorderDiscounts(fromIndex, toIndex);
-                      }}
+                      className="group relative flex items-center justify-between rounded-lg border p-3 bg-muted"
                     >
-                      {/* 드래그 핸들 */}
-                      <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 cursor-move">
-                        <GripVertical className="h-4 w-4" />
-                      </div>
-
-                      {/* 할인 정보 내용 */}
-                      <div className="ml-6 flex items-center space-x-2 text-sm">
+                      <div className="flex items-center space-x-2 text-sm">
                         <span>
                           {discount.type === "earlybird" ? "얼리버드" : 
                            discount.condition === "male" ? "남성 할인" : "여성 할인"}
@@ -551,9 +503,8 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                         </span>
                       </div>
 
-                      {/* 수정/삭제 버튼 */}
                       {editingDiscountsIndex !== index && (
-                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                        <div className="flex gap-1">
                           <Button
                             type="button"
                             variant="ghost"
