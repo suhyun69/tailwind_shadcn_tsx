@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 type CheckoutData = {
@@ -48,7 +48,11 @@ export default function CheckoutPage() {
   }, [params.checkout_id])
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    )
   }
 
   if (!checkoutData) {

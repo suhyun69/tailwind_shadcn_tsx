@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { LessonForm2 } from "@/components/LessonForm2"
 import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
 export default function EditLessonPage() {
   const params = useParams()
@@ -77,7 +78,11 @@ export default function EditLessonPage() {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin" />
+      </div>
+    )
   }
 
   return (
