@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
-import { LessonForm } from "@/components/LessonForm"
+import { LessonForm2 } from "@/components/LessonForm2"
 import { toast } from "sonner"
 
 export default function EditLessonPage() {
@@ -84,9 +84,8 @@ export default function EditLessonPage() {
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">수업 수정</h1>
-        <p className="text-muted-foreground">#{params.lesson_no}</p>
       </div>
-      <LessonForm 
+      <LessonForm2 
         lesson={lesson}
         onSaved={handleSaved}
         onCancel={() => router.back()}

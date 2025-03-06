@@ -49,7 +49,7 @@ type DiscountData = {
 }
 
 type LessonData = {
-  no?: number
+  lesson_no?: number
   title: string
   genre: string
   instructor1: string
@@ -58,7 +58,7 @@ type LessonData = {
   end_date: Date | string
   start_time: string
   end_time: string
-  date_time_sub_texts?: string[]
+  datetime_sub_texts?: string[]
   region: string
   place: string
   place_url?: string
@@ -88,6 +88,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
 
     try {
       const lessonData = {
+        lesson_no: lesson?.lesson_no,  // id 대신 lesson_no 사용
         genre,
         title,
         instructor1,
@@ -107,16 +108,12 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
         account_number: accountNumber,
         account_owner: accountOwner,
         contacts,
-        notices
+        notices,
+        updated_at: new Date().toISOString()
       }
 
-      console.log(lessonData)
-
-      await onSaved({
-        id: lesson?.no,  // 수정 시 기존 ID 사용
-        ...lessonData,
-        updated_at: new Date().toISOString()
-      })
+      await onSaved(lessonData)
+      router.push('/')
     } catch (error) {
       console.error('Error saving lesson:', error)
     } finally {
@@ -126,7 +123,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const [no, setNo] = React.useState(lesson?.no || "")
+  const [no, setNo] = React.useState(lesson?.lesson_no?.toString() || "")
 
   const [title, setTitle] = React.useState(lesson?.title || "")
   const [genre, setGenre] = React.useState(lesson?.genre || "")
@@ -142,10 +139,14 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   )
   const [isEndDateOpen, setIsEndDateOpen] = React.useState(false)
   
-  const [startTime, setStartTime] = React.useState(lesson?.start_time || "")
-  const [endTime, setEndTime] = React.useState(lesson?.end_time || "")
+  const [startTime, setStartTime] = React.useState(
+    lesson?.start_time ? lesson.start_time.slice(0, 5) : ""
+  )
+  const [endTime, setEndTime] = React.useState(
+    lesson?.end_time ? lesson.end_time.slice(0, 5) : ""
+  )
 
-  const [dateTimeSubTexts, setDateTimeSubTexts] = React.useState(lesson?.date_time_sub_texts || [])
+  const [dateTimeSubTexts, setDateTimeSubTexts] = React.useState(lesson?.datetime_sub_texts || [])
   const [dateTimeSubTextInput, setDateTimeSubTextInput] = React.useState("")
   const dateTimeSubTextInputLength = dateTimeSubTextInput.trim().length
   const [editingDateTimeSubTextsIndex, setEditingDateTimeSubTextsIndex] = useState<number | null>(null)
@@ -192,9 +193,9 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setInstructor2(lesson.instructor2 || "")
       setStartDate(lesson.start_date ? new Date(lesson.start_date) : undefined)
       setEndDate(lesson.end_date ? new Date(lesson.end_date) : undefined)
-      setStartTime(lesson.start_time || "")
-      setEndTime(lesson.end_time || "")
-      setDateTimeSubTexts(lesson.date_time_sub_texts || [])
+      setStartTime(lesson.start_time ? lesson.start_time.slice(0, 5) : "")
+      setEndTime(lesson.end_time ? lesson.end_time.slice(0, 5) : "")
+      setDateTimeSubTexts(lesson.datetime_sub_texts || [])
       setRegion(lesson.region || "")
       setPlace(lesson.place || "")
       setPlaceUrl(lesson.place_url || "")
@@ -424,7 +425,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
         <CardContent className="grid gap-6">
           <div className="grid gap-2">
             <Label htmlFor={`no`}>Lesson No</Label>
-            <Input className="bg-muted" id={`no`} placeholder="" disabled/>
+            <Input 
+              className="bg-muted" 
+              id={`no`} 
+              value={no}
+              placeholder="" 
+              disabled
+            />
           </div>
           <div className="grid gap-4">
             <div className="grid gap-2">
