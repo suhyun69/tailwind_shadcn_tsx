@@ -555,26 +555,28 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                       </div>
 
                       {/* 수정/삭제 버튼 */}
-                      <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => handleEditDiscount(index)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-destructive"
-                          onClick={() => handleDeleteDiscount(index)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      {editingDiscountsIndex !== index && (
+                        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleEditDiscount(index)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-destructive"
+                            onClick={() => handleDeleteDiscount(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
