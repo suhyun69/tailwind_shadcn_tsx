@@ -202,7 +202,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
             <Calendar
               mode="single"
               selected={discountDate}
-              onSelect={setDiscountDate}
+              onSelect={(date) => {
+                setDiscountDate(date)
+                // Popover 닫기
+                const closeEvent = new Event('keydown')
+                ;(closeEvent as any).key = 'Escape'
+                document.dispatchEvent(closeEvent)
+              }}
               initialFocus
             />
           </PopoverContent>
