@@ -52,6 +52,9 @@ type LessonData = {
   start_time: string
   end_time: string
   date_time_sub_texts?: string[]
+  region: string
+  place: string
+  place_url?: string
   price: string
   discounts?: DiscountData[]
   discount_sub_texts?: string[]
@@ -91,17 +94,20 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [editingDateTimeSubTextsIndex, setEditingDateTimeSubTextsIndex] = useState<number | null>(null)
   const [editedDateTimeSubText, setEditedDateTimeSubText] = useState("")
 
-  const [price, setPrice] = React.useState(lesson?.price || "")
+  const [region, setRegion] = React.useState(lesson?.region || "")
+  const [place, setPlace] = React.useState(lesson?.place || "")
+  const [placeUrl, setPlaceUrl] = React.useState(lesson?.place_url || "")
 
+  const [price, setPrice] = React.useState(lesson?.price || "")
   const [discountType, setDiscountType] = useState("")
   const [discountCondition, setDiscountCondition] = useState("")
   const [discountDate, setDiscountDate] = useState<Date>()
   const [discountAmount, setDiscountAmount] = useState("")
-  const [discounts, setDiscounts] = useState<Array<DiscountData>>([])
+  const [discounts, setDiscounts] = useState(lesson?.discounts || [])
   const [editingDiscountsIndex, setEditingDiscountsIndex] = useState<number | null>(null)
 
   const [discountSubTextInput, setDiscountSubTextInput] = useState("")
-  const [discountSubTexts, setDiscountSubTexts] = useState<string[]>([])
+  const [discountSubTexts, setDiscountSubTexts] = useState(lesson?.discount_sub_texts || [])
   const discountSubTextInputLength = discountSubTextInput.trim().length
   const [editingDiscountSubTextsIndex, setEditingDiscountSubTextsIndex] = useState<number | null>(null)
   const [editedDiscountSubText, setEditedDiscountSubText] = useState("")
@@ -118,6 +124,9 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setStartTime(lesson.start_time || "")
       setEndTime(lesson.end_time || "")
       setDateTimeSubTexts(lesson.date_time_sub_texts || [])
+      setRegion(lesson.region || "")
+      setPlace(lesson.place || "")
+      setPlaceUrl(lesson.place_url || "")
       setPrice(lesson.price || "")
       setDiscounts(lesson.discounts || [])
       setDiscountSubTexts(lesson.discount_sub_texts || [])
