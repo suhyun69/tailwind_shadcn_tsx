@@ -54,7 +54,7 @@ type LessonData = {
   date_time_sub_texts?: string[]
   price: string
   discounts?: DiscountData[]
-  discounts_sub_texts?: string[]
+  discount_sub_texts?: string[]
 }
 
 type LessonFormProps = {
@@ -100,11 +100,11 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [discounts, setDiscounts] = useState<Array<DiscountData>>([])
   const [editingDiscountsIndex, setEditingDiscountsIndex] = useState<number | null>(null)
 
-  const [discountsSubTextInput, setDiscountsSubTextInput] = useState("")
-  const [discountsSubTexts, setDiscountsSubTexts] = useState<string[]>([])
-  const discountsSubTextInputLength = discountsSubTextInput.trim().length
-  const [editingDiscountsSubTextsIndex, setEditingDiscountsSubTextsIndex] = useState<number | null>(null)
-  const [editedDiscountsSubText, setEditedDiscountsSubText] = useState("")
+  const [discountSubTextInput, setDiscountSubTextInput] = useState("")
+  const [discountSubTexts, setDiscountSubTexts] = useState<string[]>([])
+  const discountSubTextInputLength = discountSubTextInput.trim().length
+  const [editingDiscountSubTextsIndex, setEditingDiscountSubTextsIndex] = useState<number | null>(null)
+  const [editedDiscountSubText, setEditedDiscountSubText] = useState("")
 
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
@@ -120,6 +120,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setDateTimeSubTexts(lesson.date_time_sub_texts || [])
       setPrice(lesson.price || "")
       setDiscounts(lesson.discounts || [])
+      setDiscountSubTexts(lesson.discount_sub_texts || [])
     }
   }, [lesson])
 
@@ -189,24 +190,24 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   }
 
   const handleAddDiscountsSubText = () => {
-    if (discountsSubTextInput.trim()) {
-      setDiscountsSubTexts([...discountsSubTexts, discountsSubTextInput.trim()])
-      setDiscountsSubTextInput("")
+    if (discountSubTextInput.trim()) {
+      setDiscountSubTexts([...discountSubTexts, discountSubTextInput.trim()])
+      setDiscountSubTextInput("")
     }
   }
 
   const handleEditDiscountsSubText = (index: number, text: string) => {
-    setEditingDiscountsSubTextsIndex(index)
-    setEditedDiscountsSubText(text)
+    setEditingDiscountSubTextsIndex(index)
+    setEditedDiscountSubText(text)
   }
 
   const handleSaveDiscountsSubText = (index: number) => {
-    if (editedDiscountsSubText.trim()) {
-      const newTexts = [...discountsSubTexts]
-      newTexts[index] = editedDiscountsSubText.trim()
-      setDiscountsSubTexts(newTexts)
+    if (editedDiscountSubText.trim()) {
+      const newTexts = [...discountSubTexts]
+      newTexts[index] = editedDiscountSubText.trim()
+      setDiscountSubTexts(newTexts)
     }
-    setEditingDiscountsSubTextsIndex(null)
+    setEditingDiscountSubTextsIndex(null)
   }
 
   const renderDiscountConditions = () => {
@@ -603,10 +604,10 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
             </div>
           </div>
 
-          {/* discountsSubTexts 표시 영역 */}
-          {discountsSubTexts.length > 0 && (
+          {/* discountSubTexts 표시 영역 */}
+          {discountSubTexts.length > 0 && (
             <div className="space-y-4">
-              {discountsSubTexts.map((text, index) => (
+              {discountSubTexts.map((text, index) => (
                 <div
                   key={index}
                   className={cn(
@@ -614,11 +615,11 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                     "bg-muted"
                   )}
                 >
-                  {editingDiscountsSubTextsIndex === index ? (
+                  {editingDiscountSubTextsIndex === index ? (
                     <>
                       <Input
-                        value={editedDiscountsSubText}
-                        onChange={(e) => setEditedDiscountsSubText(e.target.value)}
+                        value={editedDiscountSubText}
+                        onChange={(e) => setEditedDiscountSubText(e.target.value)}
                         className="h-6 w-[200px]"
                       />
                       <Button
@@ -633,7 +634,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                   ) : (
                     <>
                       {text}
-                      {editingDiscountsSubTextsIndex === null && (
+                      {editingDiscountSubTextsIndex === null && (
                         <div className="ml-2 flex items-center gap-1">
                           <Button
                             size="icon"
@@ -648,9 +649,9 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                             variant="ghost"
                             className="h-6 w-6"
                             onClick={() => {
-                              const newTexts = [...discountsSubTexts]
+                              const newTexts = [...discountSubTexts]
                               newTexts.splice(index, 1)
-                              setDiscountsSubTexts(newTexts)
+                              setDiscountSubTexts(newTexts)
                             }}
                           >
                             <Trash2 className="h-3 w-3" />
@@ -667,17 +668,17 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           {/* 입력 영역 */}
           <div className="flex gap-2">
             <Input
-              id="discountsSubTextInput"
+              id="discountSubTextInput"
               placeholder="할인 관련 추가정보를 입력하세요."
               className="flex-1"
               autoComplete="off"
-              value={discountsSubTextInput}
-              onChange={(event) => setDiscountsSubTextInput(event.target.value)}
+              value={discountSubTextInput}
+              onChange={(event) => setDiscountSubTextInput(event.target.value)}
             />
             <Button 
               type="button"
               size="icon" 
-              disabled={discountsSubTextInputLength === 0}
+              disabled={discountSubTextInputLength === 0}
               onClick={handleAddDiscountsSubText}
             >
               <Plus />
