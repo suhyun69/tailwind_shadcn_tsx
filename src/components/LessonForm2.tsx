@@ -534,24 +534,21 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                       </div>
 
                       {/* 할인 정보 내용 */}
-                      <div className="ml-6 flex flex-col space-y-1 text-sm">
-                        <div>
-                          <span>
-                            타입: {discount.type === "earlybird" ? "얼리버드" : "성별"}
-                          </span>
-                        </div>
-                        <div>
-                          {discount.type === "earlybird" ? (
-                            <span>
-                              마감일: {discount.date && format(new Date(discount.date), "yyyy-MM-dd")}
-                            </span>
-                          ) : (
-                            <span>대상: {discount.condition === "male" ? "남성" : "여성"}</span>
-                          )}
-                        </div>
-                        <div>
-                          할인금액: {discount.amount}원
-                        </div>
+                      <div className="ml-6 flex items-center space-x-2 text-sm">
+                        <span>
+                          {discount.type === "earlybird" ? "얼리버드" : 
+                           discount.condition === "male" ? "남성 할인" : "여성 할인"}
+                        </span>
+                        <span>|</span>
+                        {discount.type === "earlybird" && discount.date && (
+                          <>
+                            <span>{format(new Date(discount.date), "yyyy-MM-dd")}</span>
+                            <span>|</span>
+                          </>
+                        )}
+                        <span>
+                          {new Intl.NumberFormat('ko-KR').format(-discount.amount)}원
+                        </span>
                       </div>
 
                       {/* 수정/삭제 버튼 */}
