@@ -44,6 +44,7 @@ type LessonData = {
   end_date: Date | string
   start_time: string
   end_time: string
+  date_time_sub_texts?: string[]
 }
 
 type LessonFormProps = {
@@ -74,8 +75,8 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [startTime, setStartTime] = React.useState(lesson?.start_time || "")
   const [endTime, setEndTime] = React.useState(lesson?.end_time || "")
 
-  const [dateTimeSubTexts, setdateTimeSubTexts] = React.useState<string[]>([])
-  const [dateTimeSubTextInput, setdateTimeSubTextInput] = React.useState("")
+  const [dateTimeSubTexts, setDateTimeSubTexts] = React.useState<string[]>([])
+  const [dateTimeSubTextInput, setDateTimeSubTextInput] = React.useState("")
   const dateTimeSubTextInputLength = dateTimeSubTextInput.trim().length
   const [editingDateTimeSubTextsIndex, setEditingDateTimeSubTextsIndex] = useState<number | null>(null)
   const [editedDateTimeSubText, setEditedDateTimeSubText] = useState("")
@@ -91,13 +92,14 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setEndDate(lesson.end_date ? new Date(lesson.end_date) : undefined)
       setStartTime(lesson.start_time || "")
       setEndTime(lesson.end_time || "")
+      setDateTimeSubTexts(lesson.date_time_sub_texts || [])
     }
   }, [lesson])
 
   const handleAddDateTimeSubText = () => {
     if (dateTimeSubTextInput.trim()) {
-      setdateTimeSubTexts([...dateTimeSubTexts, dateTimeSubTextInput.trim()])
-      setdateTimeSubTextInput("")  // 입력 필드 초기화
+      setDateTimeSubTexts([...dateTimeSubTexts, dateTimeSubTextInput.trim()])
+      setDateTimeSubTextInput("")  // 입력 필드 초기화
     }
   }
 
@@ -110,13 +112,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
     if (editedDateTimeSubText.trim()) {
       const newTexts = [...dateTimeSubTexts]
       newTexts[index] = editedDateTimeSubText.trim()
-      setdateTimeSubTexts(newTexts)
+      setDateTimeSubTexts(newTexts)
     }
     setEditingDateTimeSubTextsIndex(null)
   }
 
   const handleDeleteDateTimeSubText = (index: number) => {
-    setdateTimeSubTexts(dateTimeSubTexts.filter((_, i) => i !== index))
+    setDateTimeSubTexts(dateTimeSubTexts.filter((_, i) => i !== index))
   }
 
   return (
@@ -317,7 +319,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
               className="flex-1"
               autoComplete="off"
               value={dateTimeSubTextInput}
-              onChange={(event) => setdateTimeSubTextInput(event.target.value)}
+              onChange={(event) => setDateTimeSubTextInput(event.target.value)}
             />
             <Button 
               type="submit" 
@@ -331,6 +333,36 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           </div>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Location Info</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <div className="grid gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor={`region`}>Region</Label>
+              <Select defaultValue="">
+                <SelectTrigger id={`region`} aria-label="Region">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="HD">홍대</SelectItem>
+                  <SelectItem value="GN">강남</SelectItem>
+                  <SelectItem value="AP">압구정</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor={`place`}>Place</Label>
+            <Input id={`place`} placeholder="장소를 입력하세요." />
+            <Input id={`place_url`} placeholder="Url을 입력하세요." />
+          </div>
+          
+        </CardContent>
+      </Card>
+
 
 
     </form>
