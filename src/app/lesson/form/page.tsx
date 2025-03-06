@@ -11,24 +11,11 @@ export default function NewLessonPage() {
 
   const handleSaved = async (lessonData: any) => {
     try {
-      // lesson_no를 위한 현재 최대값 조회
-      const { data: maxNoData } = await supabase
-        .from('lessons')
-        .select('lesson_no')
-        .order('lesson_no', { ascending: false })
-        .limit(1)
-        .single()
-
-      const nextLessonNo = (maxNoData?.lesson_no || 0) + 1
 
       const { error } = await supabase
         .from('lessons')
         .insert({
-          ...lessonData,
-          lesson_no: nextLessonNo,
-          lesson_id: crypto.randomUUID(),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          ...lessonData
         })
 
       if (error) throw error

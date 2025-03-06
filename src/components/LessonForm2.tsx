@@ -110,14 +110,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
         notices
       }
 
+      console.log(lessonData)
+
       await onSaved({
         id: lesson?.no,  // 수정 시 기존 ID 사용
         ...lessonData,
         updated_at: new Date().toISOString()
       })
-
-      // 저장 완료 후 홈으로 이동
-      router.push('/')
     } catch (error) {
       console.error('Error saving lesson:', error)
     } finally {
@@ -126,6 +125,8 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   }
 
   const [isLoading, setIsLoading] = useState(false)
+
+  const [no, setNo] = React.useState(lesson?.no || "")
 
   const [title, setTitle] = React.useState(lesson?.title || "")
   const [genre, setGenre] = React.useState(lesson?.genre || "")
@@ -153,8 +154,8 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [region, setRegion] = React.useState(lesson?.region || "")
   const [place, setPlace] = React.useState(lesson?.place || "")
   const [placeUrl, setPlaceUrl] = React.useState(lesson?.place_url || "")
-
   const [price, setPrice] = React.useState(lesson?.price || "")
+
   const [discountType, setDiscountType] = useState("")
   const [discountCondition, setDiscountCondition] = useState("")
   const [discountDate, setDiscountDate] = useState<Date>()
@@ -428,7 +429,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor={`genre`}>Genre</Label>
-              <Select defaultValue="">
+              <Select value={genre} onValueChange={setGenre}>
                 <SelectTrigger id={`genre`} aria-label="Genre">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
@@ -442,12 +443,17 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           </div>
           <div className="grid gap-2">
             <Label htmlFor={`title`}>Title</Label>
-            <Input id={`title`} placeholder="수업명을 입력하세요." />
+            <Input 
+              id={`title`} 
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="수업명을 입력하세요." 
+            />
           </div>
           <div className="grid gap-4 grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor={`instructor1`}>Instructor1</Label>
-              <Select defaultValue="">
+              <Select value={instructor1} onValueChange={setInstructor1}>
                 <SelectTrigger id={`instructor1`} aria-label="Instructor1">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
@@ -461,7 +467,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
             </div>
             <div className="grid gap-2">
               <Label htmlFor={`instructor2`}>Instructor2</Label>
-              <Select defaultValue="">
+              <Select value={instructor2} onValueChange={setInstructor2}>
                 <SelectTrigger id={`instructor2`} aria-label="Instructor2">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
@@ -544,11 +550,21 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           <div className="grid gap-4 grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor={`start_time`}>시작 시간</Label>
-              <Input id={`start_time`} placeholder="HH:mm" />
+              <Input 
+                id={`start_time`} 
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                placeholder="HH:mm" 
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor={`end_time`}>종료 시간</Label>
-              <Input id={`end_time`} placeholder="HH:mm" />
+              <Input 
+                id={`end_time`} 
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                placeholder="HH:mm" 
+              />
             </div>
           </div>
 
@@ -635,7 +651,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor={`region`}>Region</Label>
-              <Select defaultValue="">
+              <Select value={region} onValueChange={setRegion}>
                 <SelectTrigger id={`region`} aria-label="Region">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
@@ -649,8 +665,18 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           </div>
           <div className="grid gap-2">
             <Label htmlFor={`place`}>Place</Label>
-            <Input id={`place`} placeholder="장소를 입력하세요." />
-            <Input id={`place_url`} placeholder="Url을 입력하세요." />
+            <Input 
+              id={`place`} 
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
+              placeholder="장소를 입력하세요." 
+            />
+            <Input 
+              id={`place_url`} 
+              value={placeUrl}
+              onChange={(e) => setPlaceUrl(e.target.value)}
+              placeholder="Url을 입력하세요." 
+            />
           </div>
         </CardContent>
       </Card>
@@ -663,7 +689,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor={`price`}>Price</Label>
-              <Input id={`price`} placeholder="금액을 입력하세요." />
+              <Input 
+                id={`price`} 
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="금액을 입력하세요." 
+                type="number"
+              />
             </div>
           </div>
           <div className="grid gap-4">
