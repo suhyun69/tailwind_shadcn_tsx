@@ -34,6 +34,13 @@ import { Calendar } from "@/components/ui/calendar"
 import { Calendar as CalendarIcon, Check, GripVertical, Plus, Send } from "lucide-react"
 import { Pencil, Trash2, X } from "lucide-react"
 
+type DiscountData = {
+  type: string
+  condition?: string
+  date?: string
+  amount: number
+}
+
 type LessonData = {
   no?: number
   title: string
@@ -46,6 +53,7 @@ type LessonData = {
   end_time: string
   date_time_sub_texts?: string[]
   price: string
+  discounts?: DiscountData[]
 }
 
 type LessonFormProps = {
@@ -88,12 +96,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [discountCondition, setDiscountCondition] = useState("")
   const [discountDate, setDiscountDate] = useState<Date>()
   const [discountAmount, setDiscountAmount] = useState("")
-  const [discounts, setDiscounts] = useState<Array<{
-    type: string
-    condition?: string
-    date?: string
-    amount: number
-  }>>([])
+  const [discounts, setDiscounts] = useState<Array<DiscountData>>([])
   const [editingDiscountsIndex, setEditingDiscountsIndex] = useState<number | null>(null)
 
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
@@ -108,6 +111,8 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setStartTime(lesson.start_time || "")
       setEndTime(lesson.end_time || "")
       setDateTimeSubTexts(lesson.date_time_sub_texts || [])
+      setPrice(lesson.price || "")
+      setDiscounts(lesson.discounts || [])
     }
   }, [lesson])
 
