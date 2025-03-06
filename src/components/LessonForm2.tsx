@@ -3,6 +3,7 @@
 import { useState } from "react"
 import * as React from "react"
 import { useRouter } from "next/navigation"
+import { format } from "date-fns"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -23,6 +24,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import { Calendar as CalendarIcon } from "lucide-react"
 
 type LessonData = {
   no?: number
@@ -30,6 +39,10 @@ type LessonData = {
   genre: string
   instructor1: string
   instructor2?: string
+  start_date: Date | string
+  end_date: Date | string
+  start_time: string
+  end_time: string
 }
 
 type LessonFormProps = {
@@ -47,6 +60,16 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [genre, setGenre] = React.useState(lesson?.genre || "")
   const [instructor1, setInstructor1] = React.useState(lesson?.instructor1 || "")
   const [instructor2, setInstructor2] = React.useState(lesson?.instructor2 || "")
+  const [startDate, setStartDate] = React.useState<Date | undefined>(
+    lesson?.start_date ? new Date(lesson.start_date) : undefined
+  )
+  const [isStartDateOpen, setIsStartDateOpen] = React.useState(false)
+  const [endDate, setEndDate] = React.useState<Date | undefined>(
+    lesson?.end_date ? new Date(lesson.end_date) : undefined
+  )
+  const [isEndDateOpen, setIsEndDateOpen] = React.useState(false)
+  const [startTime, setStartTime] = React.useState(lesson?.start_time || "")
+  const [endTime, setEndTime] = React.useState(lesson?.end_time || "")
 
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
@@ -55,6 +78,10 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setGenre(lesson.genre || "")
       setInstructor1(lesson.instructor1 || "")
       setInstructor2(lesson.instructor2 || "")
+      setStartDate(lesson.start_date ? new Date(lesson.start_date) : undefined)
+      setEndDate(lesson.end_date ? new Date(lesson.end_date) : undefined)
+      setStartTime(lesson.start_time || "")
+      setEndTime(lesson.end_time || "")
     }
   }, [lesson])
 
@@ -121,7 +148,84 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
         </CardContent>
       </Card>
 
-      
+      <Card>
+        <CardHeader>
+          <CardTitle>Time Info</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <div className="grid gap-4 grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="start_date" className="text-sm">시작일</Label>
+              <Popover open={isStartDateOpen} onOpenChange={setIsStartDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "yyyy-MM-dd") : "날짜를 선택하세요"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={(date) => {
+                      setStartDate(date);
+                      setIsStartDateOpen(false);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="end_date" className="text-sm">종료일</Label>
+              <Popover open={isEndDateOpen} onOpenChange={setIsEndDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "yyyy-MM-dd") : "날짜를 선택하세요"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={(date) => {
+                      setEndDate(date);
+                      setIsEndDateOpen(false);
+                    }}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          <div className="grid gap-4 grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor={`start_time`}>시작 시간</Label>
+              <Input id={`start_time`} placeholder="HH:mm" />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor={`end_time`}>종료 시간</Label>
+              <Input id={`end_time`} placeholder="HH:mm" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+
     </form>
     
   )
