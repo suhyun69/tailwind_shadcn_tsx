@@ -69,6 +69,7 @@ type LessonData = {
   account_number: string
   account_owner: string
   contacts: ContactData[]
+  notices: string[]
 }
 
 type LessonFormProps = {
@@ -133,6 +134,10 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [contactName, setContactName] = useState("")
   const [editingContactIndex, setEditingContactIndex] = useState<number | null>(null)
 
+  const [notices, setNotices] = useState<string[]>(lesson?.notices || [])
+  const [noticeInput, setNoticeInput] = useState("")
+  const [editingNoticeIndex, setEditingNoticeIndex] = useState<number | null>(null)
+
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
     if (lesson) {
@@ -155,6 +160,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setAccountNumber(lesson.account_number || "")
       setAccountOwner(lesson.account_owner || "")
       setContacts(lesson.contacts || [])
+      setNotices(lesson.notices || [])
     }
   }, [lesson])
 
@@ -278,6 +284,29 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
 
   const handleDeleteContact = (index: number) => {
     setContacts(contacts.filter((_, i) => i !== index))
+  }
+
+  const handleAddNotice = () => {
+    if (!noticeInput.trim()) return
+
+    if (editingNoticeIndex !== null) {
+      const newNotices = [...notices]
+      newNotices[editingNoticeIndex] = noticeInput.trim()
+      setNotices(newNotices)
+      setEditingNoticeIndex(null)
+    } else {
+      setNotices([...notices, noticeInput.trim()])
+    }
+    setNoticeInput("")
+  }
+
+  const handleEditNotice = (index: number) => {
+    setNoticeInput(notices[index])
+    setEditingNoticeIndex(index)
+  }
+
+  const handleDeleteNotice = (index: number) => {
+    setNotices(notices.filter((_, i) => i !== index))
   }
 
   const renderDiscountConditions = () => {
@@ -937,9 +966,78 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
                 )}
               </div>
             </div>
+
+            {/* Notice 영역 */}
+            <div className="space-y-4">
+              <div className="grid gap-2">
+                <Label>Notice</Label>
+                {notices.length > 0 && (
+                  <div className="space-y-2">
+                    {notices.map((notice, index) => (
+                      <div 
+                        key={index} 
+                        className="flex items-center justify-between rounded-lg border p-3 bg-muted"
+                      >
+                        <div className="text-sm break-words">
+                          {notice}
+                        </div>
+
+                        {editingNoticeIndex !== index && (
+                          <div className="flex gap-1 ml-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleEditNotice(index)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-destructive"
+                              onClick={() => handleDeleteNotice(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* 입력 영역 */}
+                <div className="flex gap-2">
+                  <Input 
+                    id="notice_content" 
+                    placeholder="공지사항을 입력하세요" 
+                    value={noticeInput}
+                    onChange={(e) => setNoticeInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        handleAddNotice()
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleAddNotice}
+                    className="shrink-0"
+                  >
+                    {editingNoticeIndex !== null ? "수정" : "입력"}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
+
+      <Button className="w-full">Create</Button>
 
     </form>
     

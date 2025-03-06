@@ -46,11 +46,14 @@ export default function NewLessonPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold">새 수업 추가</h1>
       </div>
-      <LessonForm2/>
-      <LessonForm 
+      <LessonForm2 
         onSaved={handleSaved}
         onCancel={() => router.back()}
       />
+      {/* <LessonForm 
+        onSaved={handleSaved}
+        onCancel={() => router.back()}
+      /> */}
       
     </div>
   )
