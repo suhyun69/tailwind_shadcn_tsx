@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
-import { Calendar as CalendarIcon } from "lucide-react"
+import { Calendar as CalendarIcon, Plus, Send } from "lucide-react"
 
 type LessonData = {
   no?: number
@@ -60,6 +60,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [genre, setGenre] = React.useState(lesson?.genre || "")
   const [instructor1, setInstructor1] = React.useState(lesson?.instructor1 || "")
   const [instructor2, setInstructor2] = React.useState(lesson?.instructor2 || "")
+
   const [startDate, setStartDate] = React.useState<Date | undefined>(
     lesson?.start_date ? new Date(lesson.start_date) : undefined
   )
@@ -70,6 +71,10 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [isEndDateOpen, setIsEndDateOpen] = React.useState(false)
   const [startTime, setStartTime] = React.useState(lesson?.start_time || "")
   const [endTime, setEndTime] = React.useState(lesson?.end_time || "")
+
+  const [dateTimeSubTexts, setdateTimeSubTexts] = React.useState<string[]>([])
+  const [dateTimeSubTextInput, setdateTimeSubTextInput] = React.useState("")
+  const dateTimeSubTextInputLength = dateTimeSubTextInput.trim().length
 
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
@@ -84,6 +89,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setEndTime(lesson.end_time || "")
     }
   }, [lesson])
+
+  const handleAddDateTimeSubText = () => {
+    if (dateTimeSubTextInput.trim()) {
+      setdateTimeSubTexts([...dateTimeSubTexts, dateTimeSubTextInput.trim()])
+      setdateTimeSubTextInput("")  // 입력 필드 초기화
+    }
+  }
 
   return (
     <form className="space-y-8">
@@ -221,6 +233,42 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
               <Label htmlFor={`end_time`}>종료 시간</Label>
               <Input id={`end_time`} placeholder="HH:mm" />
             </div>
+          </div>
+
+          {dateTimeSubTexts.length > 0 && (
+            <div className="space-y-4">
+              {dateTimeSubTexts.map((text, index) => (
+                <div
+                  key={index}
+                  className={cn(
+                    "flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm",
+                    // "ml-auto bg-primary text-primary-foreground"
+                    "bg-muted"
+                  )}
+                >
+                  {text}
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Input
+              id="dateTimeSubTextInput"
+              placeholder="추가정보를 입력하세요."
+              className="flex-1"
+              autoComplete="off"
+              value={dateTimeSubTextInput}
+              onChange={(event) => setdateTimeSubTextInput(event.target.value)}
+            />
+            <Button 
+              type="submit" 
+              size="icon" 
+              disabled={dateTimeSubTextInputLength === 0}
+              onClick={handleAddDateTimeSubText}
+            >
+              <Plus />
+              <span className="sr-only">Send</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
