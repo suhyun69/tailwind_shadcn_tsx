@@ -31,8 +31,15 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
-import { Calendar as CalendarIcon, Check, GripVertical, Plus, Send } from "lucide-react"
+import { Calendar as CalendarIcon, Check, GripVertical, Plus, Send, Youtube } from "lucide-react"
 import { Pencil, Trash2, X } from "lucide-react"
+import { Phone, MessageCircle, Instagram, Globe } from "lucide-react"
+
+type ContactData = {
+  type: string
+  address: string
+  name?: string
+}
 
 type DiscountData = {
   type: string
@@ -58,6 +65,10 @@ type LessonData = {
   price: string
   discounts?: DiscountData[]
   discount_sub_texts?: string[]
+  bank: string
+  account_number: string
+  account_owner: string
+  contacts: ContactData[]
 }
 
 type LessonFormProps = {
@@ -112,6 +123,16 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [editingDiscountSubTextsIndex, setEditingDiscountSubTextsIndex] = useState<number | null>(null)
   const [editedDiscountSubText, setEditedDiscountSubText] = useState("")
 
+  const [bank, setBank] = useState(lesson?.bank || "")
+  const [accountNumber, setAccountNumber] = useState(lesson?.account_number || "")
+  const [accountOwner, setAccountOwner] = useState(lesson?.account_owner || "")
+
+  const [contacts, setContacts] = useState(lesson?.contacts || [])
+  const [contactType, setContactType] = useState("")
+  const [contactAddress, setContactAddress] = useState("")
+  const [contactName, setContactName] = useState("")
+  const [editingContactIndex, setEditingContactIndex] = useState<number | null>(null)
+
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
     if (lesson) {
@@ -130,6 +151,10 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setPrice(lesson.price || "")
       setDiscounts(lesson.discounts || [])
       setDiscountSubTexts(lesson.discount_sub_texts || [])
+      setBank(lesson.bank || "")
+      setAccountNumber(lesson.account_number || "")
+      setAccountOwner(lesson.account_owner || "")
+      setContacts(lesson.contacts || [])
     }
   }, [lesson])
 
@@ -219,6 +244,42 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
     setEditingDiscountSubTextsIndex(null)
   }
 
+  const handleAddContact = () => {
+    if (!contactType || !contactAddress) return
+
+    const newContact = {
+      type: contactType,
+      address: contactAddress,
+      name: contactName || undefined
+    }
+
+    if (editingContactIndex !== null) {
+      const newContacts = [...contacts]
+      newContacts[editingContactIndex] = newContact
+      setContacts(newContacts)
+      setEditingContactIndex(null)
+    } else {
+      setContacts([...contacts, newContact])
+    }
+
+    // 입력 필드 초기화
+    setContactType("")
+    setContactAddress("")
+    setContactName("")
+  }
+
+  const handleEditContact = (index: number) => {
+    const contact = contacts[index]
+    setContactType(contact.type)
+    setContactAddress(contact.address)
+    setContactName(contact.name || "")
+    setEditingContactIndex(index)
+  }
+
+  const handleDeleteContact = (index: number) => {
+    setContacts(contacts.filter((_, i) => i !== index))
+  }
+
   const renderDiscountConditions = () => {
     if (discountType === "earlybird") {
       return (
@@ -259,6 +320,24 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           </SelectContent>
         </Select>
       )
+    }
+  }
+
+  // 아이콘 매핑 함수 추가
+  const getContactTypeIcon = (type: string) => {
+    switch (type) {
+      case "phone":
+        return <Phone className="h-4 w-4" />
+      case "kakaotalk":
+        return <MessageCircle className="h-4 w-4" />
+      case "instagram":
+        return <Globe className="h-4 w-4" />
+      case "cafe":
+        return <Globe className="h-4 w-4" />
+      case "youtube":
+        return <Globe className="h-4 w-4" />
+      default:
+        return null
     }
   }
 
@@ -693,6 +772,171 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
               <Plus />
               <span className="sr-only">Add</span>
             </Button>
+          </div>
+
+          {/* Account 영역 추가 */}
+          <div className="space-y-4">
+            <div className="grid gap-2">
+            
+              <Label>Account</Label>
+              <div className="flex flex-col space-y-1.5">
+                <Select value={bank} onValueChange={setBank}>
+                  <SelectTrigger id="bank">
+                    <SelectValue placeholder="은행을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="sh">신한</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input 
+                  id="account" 
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  placeholder="계좌번호를 입력하세요" 
+                />
+                <Input 
+                  id="account_owner" 
+                  value={accountOwner}
+                  onChange={(e) => setAccountOwner(e.target.value)}
+                  placeholder="계좌주를 입력하세요" 
+                />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Additional Info</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <Label>Contact</Label>
+              {contacts.length > 0 && (
+                <div className="space-y-2">
+                  {contacts.map((contact, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center justify-between rounded-lg border p-3 bg-muted"
+                    >
+                      <div className="text-sm">
+                        <div className="flex items-center space-x-2 text-sm">
+                          {getContactTypeIcon(contact.type)}
+                          <span>{contact.address}</span>
+                          {contact.name && (
+                            <>
+                              <span>|</span>
+                              <span>{contact.name}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {editingContactIndex !== index && (
+                        <div className="flex gap-1">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => handleEditContact(index)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-destructive"
+                            onClick={() => handleDeleteContact(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* 입력 영역 */}
+              <div className="space-y-2">
+                <Select value={contactType} onValueChange={setContactType}>
+                  <SelectTrigger id="contact_type">
+                    <SelectValue placeholder="타입을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    <SelectItem value="phone">전화번호</SelectItem>
+                    <SelectItem value="kakaotalk">카카오톡</SelectItem>
+                    <SelectItem value="instagram">인스타그램</SelectItem>
+                    <SelectItem value="cafe">카페</SelectItem>
+                    <SelectItem value="youtube">유튜브</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {(contactType === "phone" || contactType === "kakaotalk") ? (
+                  <div className="flex-1 flex flex-col gap-2">
+                    <Input 
+                      id="contact_address" 
+                      placeholder="연락처를 입력하세요" 
+                      value={contactAddress}
+                      onChange={(e) => setContactAddress(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          handleAddContact()
+                        }
+                      }}
+                    />
+                    <div className="flex gap-2">
+                      <Input 
+                        id="contact_name" 
+                        placeholder="이름을 입력하세요" 
+                        value={contactName}
+                        onChange={(e) => setContactName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault()
+                            handleAddContact()
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleAddContact}
+                        className="shrink-0"
+                      >
+                        {editingContactIndex !== null ? "수정" : "입력"}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input 
+                      id="contact_address" 
+                      placeholder="연락처를 입력하세요" 
+                      value={contactAddress}
+                      onChange={(e) => setContactAddress(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          handleAddContact()
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleAddContact}
+                      className="shrink-0"
+                    >
+                      {editingContactIndex !== null ? "수정" : "입력"}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
