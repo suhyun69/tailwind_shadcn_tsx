@@ -74,14 +74,58 @@ type LessonData = {
 
 type LessonFormProps = {
   lesson?: LessonData | null
-  onSaved: (lessonData: any) => Promise<void>  // Promise 타입 추가
+  onSaved: (lessonData: any) => Promise<void>
   onCancel: () => void
 }
 
 export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const lessonData = {
+        genre,
+        title,
+        instructor1,
+        instructor2,
+        start_date: startDate,
+        end_date: endDate,
+        start_time: startTime,
+        end_time: endTime,
+        datetime_sub_texts: dateTimeSubTexts,
+        region,
+        place,
+        place_url: placeUrl,
+        price: Number(price),
+        discounts,
+        discount_sub_texts: discountSubTexts,
+        bank,
+        account_number: accountNumber,
+        account_owner: accountOwner,
+        contacts,
+        notices
+      }
+
+      await onSaved({
+        id: lesson?.no,  // 수정 시 기존 ID 사용
+        ...lessonData,
+        updated_at: new Date().toISOString()
+      })
+
+      // 저장 완료 후 홈으로 이동
+      router.push('/')
+    } catch (error) {
+      console.error('Error saving lesson:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const [title, setTitle] = React.useState(lesson?.title || "")
   const [genre, setGenre] = React.useState(lesson?.genre || "")
@@ -371,7 +415,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   }
 
   return (
-    <form className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <Card>
         <CardHeader>
           <CardTitle>Basic Info</CardTitle>
@@ -1037,9 +1081,13 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
         </CardContent>
       </Card>
 
-      <Button className="w-full">Create</Button>
-
+      <Button 
+        type="submit" 
+        className="w-full"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "저장 중..." : (lesson ? "수정" : "생성")}
+      </Button>
     </form>
-    
   )
 }
