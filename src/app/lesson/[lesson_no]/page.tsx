@@ -41,6 +41,7 @@ type LessonData = {
   status: 'draft' | 'published'
   datetime_sub_texts?: any[]
   discount_sub_texts?: any[]
+  image_url?: string
 }
 
 export default function LessonViewPage() {
@@ -151,12 +152,22 @@ export default function LessonViewPage() {
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       {/* 헤더 */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">{lesson.title}</h1>
           {/* <p className="text-muted-foreground">#{lesson.lesson_no}</p> */}
         </div>
       </div>
+
+      {lesson.image_url && (
+        <div className="relative w-full py-3">
+          <img
+            src={lesson.image_url}
+            alt={lesson.title}
+            className="rounded-lg object-cover w-full h-full"
+          />
+        </div>
+      )}
 
       {/* 기본 정보 */}
       <Card>

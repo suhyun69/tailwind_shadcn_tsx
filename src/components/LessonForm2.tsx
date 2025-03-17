@@ -482,7 +482,6 @@ export function LessonForm2({ lesson, onSaved, onCancel, onUploadImage }: Lesson
             </div>
           </div>
 
-
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor={`genre`}>Genre</Label>
