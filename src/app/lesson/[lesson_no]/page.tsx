@@ -39,6 +39,8 @@ type LessonData = {
   date_subtexts?: any[]
   discount_subtexts?: any[]
   status: 'draft' | 'published'
+  datetime_sub_texts?: any[]
+  discount_sub_texts?: any[]
 }
 
 export default function LessonViewPage() {
@@ -152,15 +154,7 @@ export default function LessonViewPage() {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold">{lesson.title}</h1>
-          <p className="text-muted-foreground">#{lesson.lesson_no}</p>
-        </div>
-        <div className="space-x-2">
-          <Button onClick={() => router.push(`/lesson/form/${lesson.lesson_no}`)}>
-            수정하기
-          </Button>
-          <Button onClick={handleCheckout}>
-            신청하기
-          </Button>
+          {/* <p className="text-muted-foreground">#{lesson.lesson_no}</p> */}
         </div>
       </div>
 
@@ -180,10 +174,30 @@ export default function LessonViewPage() {
               <h2 className="text-xl font-semibold">수업기간</h2>
               <p className="text-xl">{lesson.start_date && format(new Date(lesson.start_date), 'M.dd')} ~ {lesson.end_date && format(new Date(lesson.end_date), 'M.dd')}</p>
             </div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">수업시간</h2>
-              <p className="text-xl">{`${formatTime(lesson.start_time)} ~ ${formatTime(lesson.end_time)}`}</p>
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">수업시간</h2>
+                <p className="text-xl">{`${formatTime(lesson.start_time)} ~ ${formatTime(lesson.end_time)}`}</p>
+              </div>
             </div>
+
+            {lesson.datetime_sub_texts && lesson.datetime_sub_texts.length > 0 && (
+              <div className="flex justify-end">
+                <div className="space-y-2">
+                  {lesson.datetime_sub_texts.map((text, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center justify-end rounded-lg border p-3 bg-muted"
+                    >
+                      <div className="text-sm break-words text-right">
+                        {text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">지역</h2>
               <p className="text-xl">{getRegionText(lesson.region)}</p>
@@ -232,6 +246,23 @@ export default function LessonViewPage() {
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {lesson.discount_sub_texts && lesson.discount_sub_texts.length > 0 && (
+              <div className="flex justify-end">
+                <div className="space-y-2">
+                  {lesson.discount_sub_texts.map((text, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center justify-end rounded-lg border p-3 bg-muted"
+                    >
+                      <div className="text-sm break-words text-right">
+                        {text}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -299,6 +330,18 @@ export default function LessonViewPage() {
         </CardContent>
       </Card>
       
+      {/* 최하단 버튼 */}
+      <div className="mt-8 flex justify-end space-x-2">
+        {/* <Button onClick={() => router.push(`/lesson/form/${lesson.lesson_no}`)}>
+          수정하기
+        </Button> */}
+        <Button 
+          onClick={handleCheckout}
+          className="w-full"
+        >
+          신청하기
+        </Button>
+      </div>
     </div>
   )
 } 
