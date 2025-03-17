@@ -8,6 +8,7 @@ import { format } from "date-fns"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from 'uuid'
 import { Card, CardContent } from "@/components/ui/card"
+import { Instagram, MessageCircle } from "lucide-react"
 
 type LessonData = {
   lesson_id: string
@@ -20,7 +21,7 @@ type LessonData = {
   place?: string
   place_url?: string
   price?: string
-  bank?: string
+  bank: string
   account_number?: string
   account_owner?: string
   start_date?: string
@@ -120,6 +121,15 @@ export default function LessonViewPage() {
     return time.slice(0, 5)  // "HH:MM:SS" -> "HH:MM"
   }
 
+  const getBankText = (bank: string) => {
+    switch (bank) {
+      case "sh":
+        return "신한은행"
+      default:
+        return bank
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
@@ -215,7 +225,7 @@ export default function LessonViewPage() {
                           <div className="text-sm break-words text-right">
                             {discount.type === "earlybird" 
                               ? `-${discount.amount}원 (${format(new Date(discount.date), 'M.d')}까지 입금 시)`
-                              : `${discount.condition === 'male' ? '남성' : '여성'} : -${discount.amount}원`
+                              : `-${discount.amount}원 (${discount.condition === 'male' ? '남성' : '여성'})`
                             }
                           </div>
                         </div>
@@ -225,9 +235,16 @@ export default function LessonViewPage() {
                 </div>
               </div>
             )}
-            <div className="flex items-center justify-between">
+
+            <div>
               <h2 className="text-xl font-semibold">입금 계좌</h2>
-              <p className="text-xl">{`${lesson.bank} ${lesson.account_number} (${lesson.account_owner})`}</p>
+              <div className="flex justify-end">
+                <div className="inline-flex items-center rounded-lg border p-3 bg-muted">
+                  <div className="text-sm break-words text-right">
+                    {getBankText(lesson.bank)} {lesson.account_number} {lesson.account_owner}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {lesson.notices && lesson.notices.length > 0 && (
@@ -252,20 +269,32 @@ export default function LessonViewPage() {
               </div>
             )}
             
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">문의</h2>
-              <p className="text-xl">
-                {lesson.contacts && lesson.contacts.length > 0 && (
-                  <ul className="list-disc pl-5">
+            {lesson.contacts && lesson.contacts.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold">문의</h2>
+                </div>
+                <div className="flex justify-end">
+                  <div className="space-y-2">
                     {lesson.contacts.map((contact, index) => (
-                      <li key={index}>
-                        {contact.type}: {contact.address} {contact.name && `(${contact.name})`}
-                      </li>
+                      <div 
+                        key={index} 
+                        className="flex items-center justify-end rounded-lg border p-3 bg-muted"
+                      >
+                        <div className="text-sm break-words text-right flex items-center gap-2">
+                          {contact.type === 'instagram' ? (
+                            <Instagram className="h-4 w-4" />
+                          ) : (
+                            <MessageCircle className="h-4 w-4" />
+                          )}
+                          {contact.address} {contact.name && `| ${contact.name}`}
+                        </div>
+                      </div>
                     ))}
-                  </ul>
-                )}
-              </p>
-            </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         </CardContent>
       </Card>
