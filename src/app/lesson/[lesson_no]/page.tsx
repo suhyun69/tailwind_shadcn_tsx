@@ -200,39 +200,60 @@ export default function LessonViewPage() {
               <p className="text-xl">{lesson.price?.toLocaleString()}원</p>
             </div>
             {lesson.discounts && lesson.discounts.length > 0 && (
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">할인정보</h2>
-                <p className="text-xl"><ul className="list-disc pl-5">
-                  {lesson.discounts.map((discount, index) => (
-                    <li key={index}>
-                      {discount.type === "earlybird" 
-                        ? `얼리버드 할인: ${discount.amount}원 (${format(new Date(discount.date), 'yyyy-MM-dd')}까지)`
-                        : `${discount.condition === 'male' ? '남성' : '여성'} 할인: ${discount.amount}원`
-                      }
-                    </li>
-                  ))}
-                </ul></p>
+              <div>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold">할인</h2>
+                </div>
+                <div className="flex justify-end">
+                  <div className="space-y-2">
+                    {lesson.discounts.map((discount, index) => (
+                      <div 
+                        key={index} 
+                        className="flex justify-end"
+                      >
+                        <div className="inline-flex items-center rounded-lg border p-3 bg-muted">
+                          <div className="text-sm break-words text-right">
+                            {discount.type === "earlybird" 
+                              ? `-${discount.amount}원 (${format(new Date(discount.date), 'M.d')}까지 입금 시)`
+                              : `${discount.condition === 'male' ? '남성' : '여성'} : -${discount.amount}원`
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">입금 계좌</h2>
               <p className="text-xl">{`${lesson.bank} ${lesson.account_number} (${lesson.account_owner})`}</p>
             </div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">공지사항</h2>
-              <p className="text-xl">
-                {lesson.notices && lesson.notices.length > 0 && (
-                  <ul className="list-disc pl-5">
+
+            {lesson.notices && lesson.notices.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold">공지사항</h2>
+                </div>
+                <div className="flex justify-end">
+                  <div className="space-y-2">
                     {lesson.notices.map((notice, index) => (
-                      
-                      <li key={index}>{notice}</li>
+                      <div 
+                        key={index} 
+                        className="flex items-center justify-end rounded-lg border p-3 bg-muted"
+                      >
+                        <div className="text-sm break-words text-right">
+                          {notice}
+                        </div>
+                      </div>
                     ))}
-                  </ul>
-                )}
-              </p>
-            </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">연락처</h2>
+              <h2 className="text-xl font-semibold">문의</h2>
               <p className="text-xl">
                 {lesson.contacts && lesson.contacts.length > 0 && (
                   <ul className="list-disc pl-5">
