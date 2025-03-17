@@ -70,15 +70,17 @@ type LessonData = {
   account_owner: string
   contacts: ContactData[]
   notices: string[]
+  image_url?: string
 }
 
 type LessonFormProps = {
   lesson?: LessonData | null
   onSaved: (lessonData: any) => Promise<void>
   onCancel: () => void
+  onUploadImage: (file: File) => Promise<{ url: string }>
 }
 
-export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
+export function LessonForm2({ lesson, onSaved, onCancel, onUploadImage }: LessonFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -109,6 +111,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
         account_owner: accountOwner,
         contacts,
         notices,
+        image_url: imageUrl,
         updated_at: new Date().toISOString()
       }
 
@@ -184,6 +187,9 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
   const [noticeInput, setNoticeInput] = useState("")
   const [editingNoticeIndex, setEditingNoticeIndex] = useState<number | null>(null)
 
+  const [imageUrl, setImageUrl] = useState(lesson?.image_url || "")
+  const [uploading, setUploading] = useState(false)
+
   // useEffect를 사용하여 lesson prop이 변경될 때마다 상태 업데이트
   React.useEffect(() => {
     if (lesson) {
@@ -207,6 +213,7 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
       setAccountOwner(lesson.account_owner || "")
       setContacts(lesson.contacts || [])
       setNotices(lesson.notices || [])
+      setImageUrl(lesson.image_url || "")
     }
   }, [lesson])
 
@@ -416,6 +423,25 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
     }
   }
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true)
+
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('이미지를 선택해주세요.')
+      }
+
+      const file = event.target.files[0]
+      const { url } = await onUploadImage(file)
+      setImageUrl(url)
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      alert('이미지 업로드 중 오류가 발생했습니다.')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <Card>
@@ -433,6 +459,30 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
               disabled
             />
           </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="image">이미지</Label>
+            <div className="flex flex-col gap-4">
+              {imageUrl && (
+                <div className="relative w-full aspect-video">
+                  <img
+                    src={imageUrl}
+                    alt="Lesson image"
+                    className="rounded-lg object-cover w-full h-full"
+                  />
+                </div>
+              )}
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+            </div>
+          </div>
+
+
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor={`genre`}>Genre</Label>
@@ -1119,6 +1169,35 @@ export function LessonForm2({ lesson, onSaved, onCancel }: LessonFormProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* <Card>
+        <CardHeader>
+          <CardTitle>Image</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <div className="grid gap-2">
+            <Label htmlFor="image">이미지</Label>
+            <div className="flex flex-col gap-4">
+              {imageUrl && (
+                <div className="relative w-full aspect-video">
+                  <img
+                    src={imageUrl}
+                    alt="Lesson image"
+                    className="rounded-lg object-cover w-full h-full"
+                  />
+                </div>
+              )}
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card> */}
 
       <Button 
         type="submit" 

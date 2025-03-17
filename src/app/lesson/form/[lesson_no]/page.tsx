@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase"
 import { LessonForm2 } from "@/components/LessonForm2"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+import { uploadLessonImage } from '@/app/actions'
 
 export default function EditLessonPage() {
   const params = useParams()
@@ -86,7 +87,7 @@ export default function EditLessonPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="container mx-auto px-4 py-6 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">수업 수정</h1>
       </div>
@@ -94,6 +95,7 @@ export default function EditLessonPage() {
         lesson={lesson}
         onSaved={handleSaved}
         onCancel={() => router.back()}
+        onUploadImage={uploadLessonImage}
       />
     </div>
   )
