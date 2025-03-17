@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from 'uuid'
+import { Card, CardContent } from "@/components/ui/card"
 
 type LessonData = {
   lesson_id: string
@@ -15,7 +16,7 @@ type LessonData = {
   genre: string
   instructor1?: string
   instructor2?: string
-  region?: string
+  region: string
   place?: string
   place_url?: string
   price?: string
@@ -24,10 +25,12 @@ type LessonData = {
   account_owner?: string
   start_date?: string
   end_date?: string
-  startHour?: string
-  startMinute?: string
-  endHour?: string
-  endMinute?: string
+  start_time?: string
+  end_time?: string
+  // startHour?: string
+  // startMinute?: string
+  // endHour?: string
+  // endMinute?: string
   discounts?: any[]
   contacts?: any[]
   notices?: any[]
@@ -86,6 +89,37 @@ export default function LessonViewPage() {
     }
   }
 
+  const getGenreText = (genre: string) => {
+    switch (genre) {
+      case "S":
+        return "살사"
+      case "B":
+        return "바차타"
+      case "K":
+        return "키좀바"
+      default:
+        return genre
+    }
+  }
+
+  const getRegionText = (region: string) => {
+    switch (region) {
+      case "HD":
+        return "홍대"
+      case "GN":
+        return "강남"
+      case "AP":
+        return "압구정"
+      default:
+        return region
+    }
+  }
+
+  const formatTime = (time: string | null | undefined) => {
+    if (!time) return ""
+    return time.slice(0, 5)  // "HH:MM:SS" -> "HH:MM"
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">
@@ -121,76 +155,54 @@ export default function LessonViewPage() {
       </div>
 
       {/* 기본 정보 */}
-      <div className="space-y-8">
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">기본 정보</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground">장르</label>
-              <p>{lesson.genre}</p>
+      <Card>
+        <CardContent>
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">장르</h2>
+              <p className="text-xl">{getGenreText(lesson.genre)}</p>
             </div>
-            <div>
-              <label className="text-sm text-muted-foreground">강사</label>
-              <p>{[lesson.instructor1, lesson.instructor2].filter(Boolean).join(', ')}</p>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">강사</h2>
+              <p className="text-xl">{[lesson.instructor1, lesson.instructor2].filter(Boolean).join(', ')}</p>
             </div>
-          </div>
-        </section>
-
-        {/* 시간 정보 */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">시간 정보</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground">수업 기간</label>
-              <p>
-                {lesson.start_date && format(new Date(lesson.start_date), 'yyyy-MM-dd')} ~ 
-                {lesson.end_date && format(new Date(lesson.end_date), 'yyyy-MM-dd')}
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">수업기간</h2>
+              <p className="text-xl">{lesson.start_date && format(new Date(lesson.start_date), 'M.dd')} ~ {lesson.end_date && format(new Date(lesson.end_date), 'M.dd')}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">수업시간</h2>
+              <p className="text-xl">{`${formatTime(lesson.start_time)} ~ ${formatTime(lesson.end_time)}`}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">지역</h2>
+              <p className="text-xl">{getRegionText(lesson.region)}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">장소</h2>
+              <p className="text-xl">
+                {lesson.place_url ? (
+                  <a 
+                    href={lesson.place_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline hover:text-blue-800"
+                  >
+                    {lesson.place}
+                  </a>
+                ) : (
+                  lesson.place
+                )}
               </p>
             </div>
-            <div>
-              <label className="text-sm text-muted-foreground">수업 시간</label>
-              <p>{`${lesson.startHour}:${lesson.startMinute} ~ ${lesson.endHour}:${lesson.endMinute}`}</p>
-            </div>
-          </div>
-        </section>
-
-        {/* 장소 정보 */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">장소 정보</h2>
-          <div className="grid gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground">지역</label>
-              <p>{lesson.region}</p>
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground">장소</label>
-              <p>{lesson.place}</p>
-              {lesson.place_url && (
-                <a 
-                  href={lesson.place_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  위치 보기
-                </a>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* 가격 정보 */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">가격 정보</h2>
-          <div className="grid gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground">가격</label>
-              <p>{lesson.price}</p>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">가격</h2>
+              <p className="text-xl">{lesson.price?.toLocaleString()}원</p>
             </div>
             {lesson.discounts && lesson.discounts.length > 0 && (
-              <div>
-                <label className="text-sm text-muted-foreground">할인 정보</label>
-                <ul className="list-disc pl-5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">할인정보</h2>
+                <p className="text-xl"><ul className="list-disc pl-5">
                   {lesson.discounts.map((discount, index) => (
                     <li key={index}>
                       {discount.type === "earlybird" 
@@ -199,43 +211,44 @@ export default function LessonViewPage() {
                       }
                     </li>
                   ))}
-                </ul>
+                </ul></p>
               </div>
             )}
-            <div>
-              <label className="text-sm text-muted-foreground">계좌 정보</label>
-              <p>{`${lesson.bank} ${lesson.account_number} (${lesson.account_owner})`}</p>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">입금 계좌</h2>
+              <p className="text-xl">{`${lesson.bank} ${lesson.account_number} (${lesson.account_owner})`}</p>
             </div>
-          </div>
-        </section>
-
-        {/* 기타 정보 */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">기타 정보</h2>
-          {lesson.notices && lesson.notices.length > 0 && (
-            <div>
-              <label className="text-sm text-muted-foreground">공지사항</label>
-              <ul className="list-disc pl-5">
-                {lesson.notices.map((notice, index) => (
-                  <li key={index}>{notice.content}</li>
-                ))}
-              </ul>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">공지사항</h2>
+              <p className="text-xl">
+                {lesson.notices && lesson.notices.length > 0 && (
+                  <ul className="list-disc pl-5">
+                    {lesson.notices.map((notice, index) => (
+                      
+                      <li key={index}>{notice}</li>
+                    ))}
+                  </ul>
+                )}
+              </p>
             </div>
-          )}
-          {lesson.contacts && lesson.contacts.length > 0 && (
-            <div>
-              <label className="text-sm text-muted-foreground">연락처</label>
-              <ul className="list-disc pl-5">
-                {lesson.contacts.map((contact, index) => (
-                  <li key={index}>
-                    {contact.type}: {contact.address} {contact.name && `(${contact.name})`}
-                  </li>
-                ))}
-              </ul>
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold">연락처</h2>
+              <p className="text-xl">
+                {lesson.contacts && lesson.contacts.length > 0 && (
+                  <ul className="list-disc pl-5">
+                    {lesson.contacts.map((contact, index) => (
+                      <li key={index}>
+                        {contact.type}: {contact.address} {contact.name && `(${contact.name})`}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </p>
             </div>
-          )}
-        </section>
-      </div>
+          </section>
+        </CardContent>
+      </Card>
+      
     </div>
   )
 } 
