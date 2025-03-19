@@ -38,7 +38,6 @@ export default function NewLessonPage() {
       <CouponForm 
         onSaved={handleSaved}
         onCancel={() => router.back()}
-        onUploadImage={uploadLessonImage}
       />
       {/* <LessonForm 
         onSaved={handleSaved}
