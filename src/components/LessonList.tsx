@@ -4,7 +4,7 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase"
 import { toast } from "sonner"
-import { Plus, MoreHorizontal, Pencil, Trash, ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react"
+import { Plus, MoreHorizontal, Pencil, Trash, ArrowUpDown, ChevronUp, ChevronDown, Users } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { getGenreText, getRegionText } from "@/lib/utils"
+import { ApplicantsDialog } from "@/components/ApplicantsDialog"
 
 // 기존 함수들 제거하고 import한 함수 사용
 type LessonData = {
@@ -58,6 +59,8 @@ export function LessonList() {
     column: 'created_at',
     direction: 'desc'
   })
+  const [isApplicantsDialogOpen, setIsApplicantsDialogOpen] = React.useState(false)
+  const [selectedLesson, setSelectedLesson] = React.useState<LessonData | null>(null)
 
   const fetchLessons = async () => {
     try {
@@ -247,6 +250,15 @@ export function LessonList() {
                             <Trash className="mr-2 h-4 w-4" />
                             Delete
                           </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedLesson(lesson)
+                              setIsApplicantsDialogOpen(true)
+                            }}
+                          >
+                            <Users className="mr-2 h-4 w-4" />
+                            신청현황
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -257,6 +269,11 @@ export function LessonList() {
           </div>
         )}
       </CardContent>
+      <ApplicantsDialog 
+        open={isApplicantsDialogOpen}
+        onOpenChange={setIsApplicantsDialogOpen}
+        lesson={selectedLesson}
+      />
     </Card>
   )
 } 
