@@ -38,6 +38,13 @@ type CouponTemplateRow = {
 
 export function CouponList() {
   const [coupons, setCoupons] = useState<CouponTemplateRow[]>([])
+  const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null)
+  const [detailCoupons, setDetailCoupons] = useState<Array<{
+    id: number
+    code: string
+    status: 'available' | 'used' | 'expired'
+    used_at: string | null
+  }>>([])
   const supabase = createClientComponentClient()
 
   useEffect(() => {
@@ -73,12 +80,27 @@ export function CouponList() {
     fetchCouponTemplates()
   }, [])
 
+  const fetchDetailCoupons = async (templateId: number) => {
+    const { data, error } = await supabase
+      .from('coupons')
+      .select('id, code, status, used_at')
+      .eq('template_id', templateId)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching coupons:', error)
+      return
+    }
+
+    setDetailCoupons(data || [])
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>쿠폰 목록</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <Table>
           <TableHeader>
             <TableRow>
@@ -96,7 +118,20 @@ export function CouponList() {
             {coupons.map((coupon) => (
               <TableRow key={coupon.id}>
                 <TableCell className="text-center font-medium">{coupon.id}</TableCell>
-                <TableCell className="text-center">{coupon.name}</TableCell>
+                <TableCell 
+                  className="text-center cursor-pointer hover:text-blue-600"
+                  onClick={() => {
+                    if (selectedTemplateId === coupon.id) {
+                      setSelectedTemplateId(null)
+                      setDetailCoupons([])
+                    } else {
+                      setSelectedTemplateId(coupon.id)
+                      fetchDetailCoupons(coupon.id)
+                    }
+                  }}
+                >
+                  {coupon.name}
+                </TableCell>
                 <TableCell className="text-center">{coupon.discount_amount.toLocaleString()}원</TableCell>
                 <TableCell className="text-center">#{coupon.lesson_no}</TableCell>
                 <TableCell className="text-center">
@@ -135,6 +170,48 @@ export function CouponList() {
             ))}
           </TableBody>
         </Table>
+
+        {selectedTemplateId && detailCoupons.length > 0 && (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">개별 쿠폰 목록</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-center">쿠폰 코드</TableHead>
+                  <TableHead className="text-center">상태</TableHead>
+                  <TableHead className="text-center">사용일시</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {detailCoupons.map((coupon) => (
+                  <TableRow key={coupon.id}>
+                    <TableCell className="text-center font-medium">
+                      {coupon.code}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge 
+                        variant={
+                          coupon.status === 'available' ? "default" : 
+                          coupon.status === 'used' ? "secondary" : 
+                          "destructive"
+                        }
+                      >
+                        {
+                          coupon.status === 'available' ? "사용가능" : 
+                          coupon.status === 'used' ? "사용완료" : 
+                          "만료"
+                        }
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-center text-muted-foreground">
+                      {coupon.used_at ? new Date(coupon.used_at).toLocaleString() : '-'}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
