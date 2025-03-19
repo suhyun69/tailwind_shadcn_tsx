@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase"
 import { LessonForm2 } from "@/components/LessonForm2"
 import { uploadLessonImage } from '@/app/actions'
+import { CouponForm } from "@/components/CouponForm"
 
 export default function NewLessonPage() {
   const router = useRouter()
@@ -32,9 +33,9 @@ export default function NewLessonPage() {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">새 수업 추가</h1>
+        <h1 className="text-2xl font-bold">쿠폰 생성</h1>
       </div>
-      <LessonForm2 
+      <CouponForm 
         onSaved={handleSaved}
         onCancel={() => router.back()}
         onUploadImage={uploadLessonImage}
