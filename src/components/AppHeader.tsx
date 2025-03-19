@@ -65,7 +65,8 @@ export function AppHeader() {
             </DropdownMenu>
           </div>
         ) : (
-          <div onClick={() => router.push('/signup')}>
+          // <div onClick={() => router.push('/signup')}>
+          <div onClick={handleLogin}>
             <Avatar>
               <AvatarImage src="" alt="Anonymous" />
               <AvatarFallback>

@@ -29,7 +29,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { getGenreText, getRegionText } from "@/lib/utils"
 
+// 기존 함수들 제거하고 import한 함수 사용
 type LessonData = {
   lesson_id: string
   lesson_no: number
@@ -180,9 +182,9 @@ export function LessonList() {
                   </TableHead>
                   <SortableHeader column="lesson_no">No.</SortableHeader>
                   <SortableHeader column="title">Title</SortableHeader>
-                  <SortableHeader column="genre">Genre</SortableHeader>
                   <SortableHeader column="instructor1">Instructors</SortableHeader>
                   <SortableHeader column="region">Region</SortableHeader>
+                  <SortableHeader column="genre">Genre</SortableHeader>
                   <SortableHeader column="status">Status</SortableHeader>
                   <SortableHeader column="created_at">Created At</SortableHeader>
                   <TableHead className="w-[70px]"></TableHead>
@@ -191,38 +193,38 @@ export function LessonList() {
               <TableBody>
                 {lessons.map((lesson) => (
                   <TableRow key={lesson.lesson_id}>
-                    <TableCell>
+                    <TableCell className="text-center">
                       <Checkbox 
                         checked={selectedLessons.includes(lesson.lesson_id)}
                         onCheckedChange={(checked) => toggleOne(checked as boolean, lesson.lesson_id)}
                         aria-label={`Select lesson ${lesson.lesson_no}`}
                       />
                     </TableCell>
-                    <TableCell className="font-medium">#{lesson.lesson_no}</TableCell>
+                    <TableCell className="font-medium text-center">{lesson.lesson_no}</TableCell>
                     <TableCell 
-                      className="cursor-pointer hover:underline"
+                      className="cursor-pointer hover:underline text-center"
                       onClick={() => handleLessonClick(lesson)}
                     >
                       {lesson.title}
                     </TableCell>
-                    <TableCell>{lesson.genre}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       {[lesson.instructor1, lesson.instructor2]
                         .filter(Boolean)
                         .join(', ')}
                     </TableCell>
-                    <TableCell>{lesson.region || '-'}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">{lesson.region ? getRegionText(lesson.region) : '-'}</TableCell>
+                    <TableCell className="text-center">{getGenreText(lesson.genre)}</TableCell>
+                    <TableCell className="text-center">
                       <Badge 
                         variant={lesson.status === 'published' ? "default" : "secondary"}
                       >
                         {lesson.status === 'published' ? '게시됨' : '임시저장'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-muted-foreground text-center">
                       {new Date(lesson.created_at).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -239,7 +241,6 @@ export function LessonList() {
                           <DropdownMenuItem
                             className="text-red-600"
                             onClick={() => {
-                              // TODO: 삭제 기능 구현
                               toast.error("삭제 기능은 아직 구현되지 않았습니다.")
                             }}
                           >

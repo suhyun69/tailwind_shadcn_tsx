@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { v4 as uuidv4 } from 'uuid'
 import { Card, CardContent } from "@/components/ui/card"
 import { Instagram, MessageCircle } from "lucide-react"
+import { getGenreText, getRegionText } from "@/lib/utils"
 
 type LessonData = {
   lesson_id: string
@@ -90,32 +91,6 @@ export default function LessonViewPage() {
     } catch (error) {
       console.error('Error:', error)
       toast.error("결제 페이지 이동에 실패했습니다.")
-    }
-  }
-
-  const getGenreText = (genre: string) => {
-    switch (genre) {
-      case "S":
-        return "살사"
-      case "B":
-        return "바차타"
-      case "K":
-        return "키좀바"
-      default:
-        return genre
-    }
-  }
-
-  const getRegionText = (region: string) => {
-    switch (region) {
-      case "HD":
-        return "홍대"
-      case "GN":
-        return "강남"
-      case "AP":
-        return "압구정"
-      default:
-        return region
     }
   }
 
